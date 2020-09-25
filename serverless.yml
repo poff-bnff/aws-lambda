@@ -1,0 +1,53 @@
+# Welcome to serverless. Read the docs
+# https://serverless.com/framework/docs/
+
+# Serverless.yml is the configuration the CLI
+# uses to deploy your code to your provider of choice
+
+# The `service` block is the name of the service
+service: lambda
+
+frameworkVersion: '2'
+
+# The `provider` block defines where your service will be deployed
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-central-1
+
+# The `functions` block defines what code to deploy
+functions:
+  
+  #currently not functional - 239
+  codeForTokens:
+    handler: codeForTokens.handler
+    events:
+      - http:
+          path: codeForTokens
+          method: get
+          cors: true
+  
+  #currently not functional - 239
+  verif:
+    handler: verif.handler
+    events:
+      - http:
+          path: verif
+          method: get
+          cors: true
+
+  tkns:
+    handler: tkns.handler
+    events:
+      - http:
+          path: tkns
+          method: get
+          cors: true  
+          
+  markQnrAsUnfilled:
+    handler: markQnrAsUnfilled.handler
+    events:
+      - http:
+          path: markQnrAsUnfilled
+          method: get
+          cors: true            

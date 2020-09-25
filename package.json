@@ -1,0 +1,20 @@
+{
+  "name": "lambda",
+  "version": "1.0.0",
+  "description": "t",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.760.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.4"
+  },
+  "devDependencies": {
+    "serverless": "^2.1.1"
+  }
+}
