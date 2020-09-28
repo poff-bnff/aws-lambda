@@ -48,6 +48,21 @@ custom:
     exportGitVariables: false
 
 functions:
+    version:
+        handler: src/version.handler
+        name: ${self:provider.stage}-${self:service}-version
+        description: Returns current code branch name and commit
+        package:
+            include:
+                - src/version.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /
+            -
+                httpApi: GET /version
+
     codeForTokens:
         handler: src/codeForTokens.handler
         name: ${self:provider.stage}-${self:service}-codeForTokens
