@@ -1,2 +1,4 @@
 .serverless
+jspm_packages
+layers
 node_modules
