@@ -48,13 +48,78 @@ custom:
     exportGitVariables: false
 
 functions:
+    favourite-get:
+        handler: src/favourite/get.handler
+        name: ${self:provider.stage}-${self:service}-favourite-get
+        description: Returns current user's favourite movies
+        package:
+            include:
+                - src/favourite/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /favourite
+
+    favourite-put:
+        handler: src/favourite/put.handler
+        name: ${self:provider.stage}-${self:service}-favourite-put
+        description: Add movie to current user's favourites
+        package:
+            include:
+                - src/favourite/put.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: PUT /favourite/{movieId}
+
+    favourite-delete:
+        handler: src/favourite/delete.handler
+        name: ${self:provider.stage}-${self:service}-favourite-delete
+        description: Delete movie from current user's favourites
+        package:
+            include:
+                - src/favourite/delete.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: DELETE /favourite/{movieId}
+
+    profile-get:
+        handler: src/profile/get.handler
+        name: ${self:provider.stage}-${self:service}-profile-get
+        description: Returns current user's profile
+        package:
+            include:
+                - src/profile/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /profile
+
+    profile-put:
+        handler: src/profile/put.handler
+        name: ${self:provider.stage}-${self:service}-profile-put
+        description: Update current user's profile
+        package:
+            include:
+                - src/profile/put.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: PUT /profile
+
     version:
-        handler: src/version.handler
+        handler: src/version/get.handler
         name: ${self:provider.stage}-${self:service}-version
         description: Returns current code branch name and commit
         package:
             include:
-                - src/version.js
+                - src/version/get.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
@@ -62,19 +127,6 @@ functions:
                 httpApi: GET /
             -
                 httpApi: GET /version
-
-    codeForTokens:
-        handler: src/codeForTokens.handler
-        name: ${self:provider.stage}-${self:service}-codeForTokens
-        description:
-        package:
-            include:
-                - src/codeForTokens.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: GET /codeForTokens
 
     verif:
         handler: src/verif.handler
