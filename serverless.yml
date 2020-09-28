@@ -1,53 +1,93 @@
-# Welcome to serverless. Read the docs
-# https://serverless.com/framework/docs/
+service: poff
 
-# Serverless.yml is the configuration the CLI
-# uses to deploy your code to your provider of choice
-
-# The `service` block is the name of the service
-service: lambda
-
-frameworkVersion: '2'
-
-# The `provider` block defines where your service will be deployed
 provider:
-  name: aws
-  runtime: nodejs12.x
-  region: eu-central-1
+    name: aws
+    runtime: nodejs12.x
+    stage: prod
+    stackName: ${self:service}-${self:provider.stage}
+    apiName: ${self:service}-${self:provider.stage}
+    region: eu-central-1
+    endpointType: regional
+    memorySize: 256
+    timeout: 21
+    logRetentionInDays: 365
+    httpApi:
+        cors: true
+        payload: '2.0'
+    logs:
+        httpApi: true
+    # tracing:
+    #     lambda: true
 
-# The `functions` block defines what code to deploy
+    deploymentBucket:
+        name: ${self:service}
+        serverSideEncryption: AES256
+
+    environment:
+        GIT_BRANCH: ${git:branch}
+        GIT_SHA1: ${git:sha1}
+
+layers:
+    commonNodeLibs:
+        path: layers
+        compatibleRuntimes:
+            - nodejs12.x
+
+plugins:
+    - serverless-plugin-git-variables
+
+custom:
+    exportGitVariables: false
+
 functions:
-  
-  #currently not functional - 239
-  codeForTokens:
-    handler: codeForTokens.handler
-    events:
-      - http:
-          path: codeForTokens
-          method: get
-          cors: true
-  
-  #currently not functional - 239
-  verif:
-    handler: verif.handler
-    events:
-      - http:
-          path: verif
-          method: get
-          cors: true
+    codeForTokens:
+        handler: src/codeForTokens.handler
+        name: ${self:service}-${self:provider.stage}-codeForTokens
+        description:
+        package:
+            include:
+                - src/codeForTokens.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /codeForTokens
 
-  tkns:
-    handler: tkns.handler
-    events:
-      - http:
-          path: tkns
-          method: get
-          cors: true  
-          
-  markQnrAsUnfilled:
-    handler: markQnrAsUnfilled.handler
-    events:
-      - http:
-          path: markQnrAsUnfilled
-          method: get
-          cors: true            
+    verif:
+        handler: src/verif.handler
+        name: ${self:service}-${self:provider.stage}-verif
+        description:
+        package:
+            include:
+                - src/verif.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /verif
+
+    tkns:
+        handler: src/tkns.handler
+        name: ${self:service}-${self:provider.stage}-tkns
+        description:
+        package:
+            include:
+                - src/tkns.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /tkns
+
+    markQnrAsUnfilled:
+        handler: src/markQnrAsUnfilled.handler
+        name: ${self:service}-${self:provider.stage}-markQnrAsUnfilled
+        description:
+        package:
+            include:
+                - src/markQnrAsUnfilled.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /markQnrAsUnfilled
