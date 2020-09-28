@@ -1,14 +1,19 @@
 {
+  "private": true,
   "name": "lambda",
   "version": "1.0.0",
-  "description": "t",
-  "main": "handler.js",
+  "description": "AWS Lambda backend for pöff.ee",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poff-bnff/aws-lambda.git"
+  },
+  "bugs": {
+    "url": "https://github.com/poff-bnff/aws-lambda/issues"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "serverless deploy"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.760.0",
     "jsonwebtoken": "^8.5.1",
