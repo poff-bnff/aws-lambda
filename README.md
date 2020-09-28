@@ -1,1 +1,1 @@
-# AWS Lambda backend for pöff.ee
+# AWS Lambda back-end for pöff.ee
