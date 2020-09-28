@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+    install:
+        runtime-versions:
+            nodejs: 12
+        commands:
+            - mkdir -p layers/nodejs
+            - cp package*.json layers/nodejs
+            - npm install
+            - npm install --production --prefix layers/nodejs
+    build:
+        commands:
+            - npx serverless deploy
