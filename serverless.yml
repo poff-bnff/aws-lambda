@@ -1,4 +1,4 @@
-service: poff
+service: poff-api
 
 provider:
     name: aws
@@ -32,6 +32,14 @@ layers:
         path: layers
         compatibleRuntimes:
             - nodejs12.x
+
+package:
+    individually: true
+    exclude:
+        - layers/**
+        - node_modules/**
+        - src/**
+        - '*'
 
 plugins:
     - serverless-plugin-git-variables
