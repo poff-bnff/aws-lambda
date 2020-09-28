@@ -48,6 +48,97 @@ custom:
     exportGitVariables: false
 
 functions:
+    auth-post:
+        handler: src/auth/post.handler
+        name: ${self:provider.stage}-${self:service}-auth-post
+        description: Authenticates user by username and password
+        package:
+            include:
+                - src/auth/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /auth
+
+    auth-facebook-get:
+        handler: src/auth/facebook/get.handler
+        name: ${self:provider.stage}-${self:service}-auth-facebook-get
+        description: Redirects user to auth in facebook
+        package:
+            include:
+                - src/auth/facebook/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /auth/facebook
+
+    auth-facebook-post:
+        handler: src/auth/facebook/post.handler
+        name: ${self:provider.stage}-${self:service}-auth-facebook-post
+        description: Handles return request from facebook auth
+        package:
+            include:
+                - src/auth/facebook/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /auth/facebook
+
+    auth-google-get:
+        handler: src/auth/google/get.handler
+        name: ${self:provider.stage}-${self:service}-auth-google-get
+        description: Redirects user to auth in Google
+        package:
+            include:
+                - src/auth/google/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /auth/google
+
+    auth-google-post:
+        handler: src/auth/google/post.handler
+        name: ${self:provider.stage}-${self:service}-auth-google-post
+        description: Handles return request from Google auth
+        package:
+            include:
+                - src/auth/google/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /auth/google
+
+    auth-microsoft-get:
+        handler: src/auth/microsoft/get.handler
+        name: ${self:provider.stage}-${self:service}-auth-microsoft-get
+        description: Redirects user to auth in Microsoft
+        package:
+            include:
+                - src/auth/microsoft/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /auth/microsoft
+
+    auth-microsoft-post:
+        handler: src/auth/microsoft/post.handler
+        name: ${self:provider.stage}-${self:service}-auth-microsoft-post
+        description: Handles return request from Microsoft auth
+        package:
+            include:
+                - src/auth/microsoft/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /auth/microsoft
+
     favourite-get:
         handler: src/favourite/get.handler
         name: ${self:provider.stage}-${self:service}-favourite-get
