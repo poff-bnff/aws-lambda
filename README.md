@@ -1,7 +1,6 @@
 # AWS Lambda back-end for pöff.ee
 
 ### Local setup
-1st time run:
 ```shell
 $ mkdir -p layers/nodejs
 $ cp package*.json layers/nodejs
