@@ -2,6 +2,8 @@
 var AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
 
+let messageContent;
+
 module.exports.handler = (event, context, callback) => {
 
   var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({region: 'eu-central-1'});
@@ -10,13 +12,10 @@ module.exports.handler = (event, context, callback) => {
   };
   cognitoidentityserviceprovider.getUser(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data);           // successful response
+    else     console.log(data);
+    messageContent = data;          // successful response
   });
-
-  let messageContent = getUser(params);
-
-
-  // let messageContent = jwt.decode(((event.headers.Authorization).split(' '))[1]);
+// let messageContent = jwt.decode(((event.headers.Authorization).split(' '))[1]);
   // if (messageContent.name && messageContent.family_name && messageContent.email){
   //   console.log('allright, log in');
   //   messageContent.qnrFilled=true;
