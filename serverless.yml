@@ -4,8 +4,8 @@ provider:
     name: aws
     runtime: nodejs12.x
     stage: prod
-    stackName: ${self:service}-${self:provider.stage}
-    apiName: ${self:service}-${self:provider.stage}
+    stackName: ${self:provider.stage}-${self:service}
+    apiName: ${self:provider.stage}-${self:service}
     region: eu-central-1
     endpointType: regional
     memorySize: 256
@@ -50,7 +50,7 @@ custom:
 functions:
     codeForTokens:
         handler: src/codeForTokens.handler
-        name: ${self:service}-${self:provider.stage}-codeForTokens
+        name: ${self:provider.stage}-${self:service}-codeForTokens
         description:
         package:
             include:
@@ -63,7 +63,7 @@ functions:
 
     verif:
         handler: src/verif.handler
-        name: ${self:service}-${self:provider.stage}-verif
+        name: ${self:provider.stage}-${self:service}-verif
         description:
         package:
             include:
@@ -76,7 +76,7 @@ functions:
 
     tkns:
         handler: src/tkns.handler
-        name: ${self:service}-${self:provider.stage}-tkns
+        name: ${self:provider.stage}-${self:service}-tkns
         description:
         package:
             include:
@@ -89,7 +89,7 @@ functions:
 
     markQnrAsUnfilled:
         handler: src/markQnrAsUnfilled.handler
-        name: ${self:service}-${self:provider.stage}-markQnrAsUnfilled
+        name: ${self:provider.stage}-${self:service}-markQnrAsUnfilled
         description:
         package:
             include:
