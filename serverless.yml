@@ -61,6 +61,32 @@ functions:
             -
                 httpApi: POST /auth
 
+    auth-eventival-get:
+        handler: src/auth/eventival/get.handler
+        name: ${self:provider.stage}-${self:service}-auth-eventival-get
+        description: Redirects user to auth in Eventival
+        package:
+            include:
+                - src/auth/eventival/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /auth/eventival
+
+    auth-eventival-post:
+        handler: src/auth/eventival/post.handler
+        name: ${self:provider.stage}-${self:service}-auth-eventival-post
+        description: Handles return request from Eventival auth
+        package:
+            include:
+                - src/auth/eventival/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /auth/eventival
+
     auth-facebook-get:
         handler: src/auth/facebook/get.handler
         name: ${self:provider.stage}-${self:service}-auth-facebook-get
