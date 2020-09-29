@@ -11,6 +11,7 @@
     "url": "https://github.com/poff-bnff/aws-lambda/issues"
   },
   "scripts": {
+    "test": "standard --fix",
     "deploy": "serverless deploy"
   },
   "license": "MIT",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "serverless": "2.3.0",
-    "serverless-plugin-git-variables": "^4.0.0"
+    "serverless-plugin-git-variables": "4.0.0",
+    "standard": "14.3.4"
   }
 }
