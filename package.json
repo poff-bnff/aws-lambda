@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "standard --fix",
-    "deploy": "serverless deploy"
+    "deploy": "standard --fix && serverless deploy"
   },
   "license": "MIT",
   "dependencies": {
