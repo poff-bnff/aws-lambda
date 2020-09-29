@@ -271,15 +271,15 @@ functions:
             -
                 httpApi: GET /tkns
 
-    markQnrAsUnfilled:
-        handler: src/markQnrAsUnfilled.handler
-        name: ${self:provider.stage}-${self:service}-markQnrAsUnfilled
-        description:
-        package:
-            include:
-                - src/markQnrAsUnfilled.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: GET /markQnrAsUnfilled
+    # markQnrAsUnfilled:
+    #     handler: src/markQnrAsUnfilled.handler
+    #     name: ${self:provider.stage}-${self:service}-markQnrAsUnfilled
+    #     description:
+    #     package:
+    #         include:
+    #             - src/markQnrAsUnfilled.js
+    #     layers:
+    #         - {Ref: CommonNodeLibsLambdaLayer}
+    #     events:
+    #         -
+    #             httpApi: GET /markQnrAsUnfilled

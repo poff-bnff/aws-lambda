@@ -1,43 +1,37 @@
-var AWS = require('aws-sdk');
+'use strict'
+var AWS = require('aws-sdk')
+const jwt = require('jsonwebtoken')
 
+let messageContent
 
-exports.handler = (event, context, callback) => {
-    console.log(event);
-    let identities = event.request.userAttributes.identities;
-    identities = identities.replace('[', '');
-    identities = identities.replace(']', '');
+module.exports.handler = (event, context, callback) => {
+  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
+  var params = {
+    AccessToken: jwt.decode(((event.headers.Authorization).split(' '))[1]) /* required */
+  }
+  cognitoidentityserviceprovider.getUser(params, function (err, data) {
+    if (err) console.log(err, err.stack) // an error occurred
+    else console.log(data)
+    messageContent = data // successful response
+  })
+  // let messageContent = jwt.decode(((event.headers.Authorization).split(' '))[1]);
+  // if (messageContent.name && messageContent.family_name && messageContent.email){
+  //   console.log('allright, log in');
+  //   messageContent.qnrFilled=true;
+  // } else {
+  //   console.log('Required fields not filled, fill');
+  // }
+  // console.log(messageContent);
 
+  const response = {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*' // Required for CORS support to work
+    },
+    body: JSON.stringify({
+      message: messageContent
+    })
+  }
 
-    console.log(identities);
-
-    identities = JSON.parse(identities);
-    console.log(typeof(identities));
-    console.log(identities);
-    console.log(identities.userId);
-
-    let username1 = (identities.providerName).toLowerCase() + '_' + identities.userId;
-    console.group(username1);
-
-
-    var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({region: 'eu-central-1'});
-
-    var params = {
-        UserAttributes: [ /* required */
-          {
-            Name: 'custom:qnrFilled', /* required */
-            Value: 'unfilled'
-          },
-          /* more items */
-        ],
-        UserPoolId: 'eu-central-1_ockBtdcsP', /* required */
-        Username: username1 /* required */
-      };
-      cognitoidentityserviceprovider.adminUpdateUserAttributes(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else     console.log(data);           // successful response
-      });
-
-    
-    callback(null, event);
-     
-};
+  callback(null, response)
+}
