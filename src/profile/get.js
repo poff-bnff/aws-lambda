@@ -8,12 +8,21 @@ module.exports.handler = async (event) => {
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
   console.log(userDetails)
-  const userProfile = { username: userDetails.Username, profile_filled: 'false' }
+  const userProfile = { username: userDetails.Username }
 
   for (const item of userDetails.UserAttributes) {
     console.log(item)
     userProfile[item.Name] = item.Value
   }
+
+  if (!('birthdate' in userProfile)) {
+    userProfile['profile_filled'] = 'false'
+  } else {
+    userProfile['profile_filled'] = 'true'
+  }
+
+
+
 
   return userProfile
 }
