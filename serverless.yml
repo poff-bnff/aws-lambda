@@ -20,7 +20,7 @@ provider:
     #     lambda: true
 
     deploymentBucket:
-        name: ${self:service}
+        name: ${self:provider.stage}-${self:service}
         serverSideEncryption: AES256
 
     environment:
