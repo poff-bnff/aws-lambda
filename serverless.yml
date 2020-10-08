@@ -230,6 +230,29 @@ functions:
             -
                 httpApi: PUT /profile
 
+    profile-post:
+        handler: src/profile/post.handler
+        name: ${self:provider.stage}-${self:service}-profile-post
+        description: Post new user's profile
+        package:
+            include:
+                - src/profile/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /profile
+
+    mergeAccount-trigger:
+        handler: src/cognito_triggers/mergeAccount.handler
+        name: ${self:provider.stage}-${self:service}-mergeAccount-trigger
+        description: Merges new user with old if same email
+        package:
+            include:
+                - src/cognito_triggers/mergeAccount.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+
     version:
         handler: src/version/get.handler
         name: ${self:provider.stage}-${self:service}-version
@@ -270,6 +293,10 @@ functions:
         events:
             -
                 httpApi: GET /tkns
+
+
+
+
 
     # markQnrAsUnfilled:
     #     handler: src/markQnrAsUnfilled.handler

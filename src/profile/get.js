@@ -16,13 +16,10 @@ module.exports.handler = async (event) => {
   }
 
   if (!('birthdate' in userProfile)) {
-    userProfile['profile_filled'] = 'false'
+    userProfile.profile_filled = 'false'
   } else {
-    userProfile['profile_filled'] = 'true'
+    userProfile.profile_filled = 'true'
   }
-
-
-
 
   return userProfile
 }
