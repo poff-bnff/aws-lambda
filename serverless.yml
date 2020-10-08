@@ -165,6 +165,18 @@ functions:
             -
                 httpApi: POST /auth/microsoft
 
+    deploy-post:
+        handler: src/deploy/post.handler
+        name: ${self:provider.stage}-${self:service}-deploy-post
+        description: Handles deploy from preprod to live
+        package:
+            include:
+                - src/deploy/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /deploy
     favourite-get:
         handler: src/favourite/get.handler
         name: ${self:provider.stage}-${self:service}-favourite-get
