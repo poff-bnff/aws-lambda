@@ -12,21 +12,31 @@ exports.handler = async (event) => {
   const ssmKeyValue = ssmKey.Parameter.Value
   const ssmProjectsValue = ssmProjects.Parameter.Value
 
-  if (!event.body) {
+  let body = event.body
+
+  if (event.isBase64Encoded) {
+    body = Buffer.from(body, 'base64').toString()
+  }
+
+  if (!body) {
     return { error: 404 }
   }
 
-  if (ssmKeyValue !== (event.headers.authorization || event.headers.Authorization)) {
+  if (`Bearer ${ssmKeyValue}` !== (event.headers.authorization || event.headers.Authorization)) {
     return { error: 401 }
   }
 
-  if (ssmProjectsValue.split(',').includes(event.body)) {
+  if (!ssmProjectsValue.split(',').includes(body)) {
     return { error: 401 }
   }
 
   const result = await build.startBuild({
-    projectName: event.body
+    projectName: body
   }).promise()
 
-  return result
+  return {
+    id: result.build.id,
+    buildNumber: result.build.buildNumber,
+    startTime: result.build.startTime
+  }
 }
