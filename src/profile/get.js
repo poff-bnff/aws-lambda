@@ -16,7 +16,7 @@ module.exports.handler = async (event) => {
   }
 
   if (!('birthdate' in userProfile)) {
-    userProfile.profile_filled = 'false'
+    delete userProfile.profile_filled
   } else {
     userProfile.profile_filled = 'true'
   }

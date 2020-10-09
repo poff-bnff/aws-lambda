@@ -12,8 +12,3 @@ var x =	[
   { Name: 'phone_number', Value: '' },
   { Name: 'address', Value: 'Eesti, ' }
 ]
-
-
-
-
-

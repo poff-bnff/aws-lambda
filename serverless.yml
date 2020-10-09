@@ -216,6 +216,20 @@ functions:
             -
                 httpApi: DELETE /favourite/{movieId}
 
+    picture-get:
+        handler: src/picture/getLink.handler
+        name: ${self:provider.stage}-${self:service}-picture-get
+        description: Returns current user's picture link S3
+        package:
+            include:
+                - src/picture/getLink.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /picture
+
+
     profile-get:
         handler: src/profile/get.handler
         name: ${self:provider.stage}-${self:service}-profile-get
