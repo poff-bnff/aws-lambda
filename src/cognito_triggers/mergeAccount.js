@@ -2,8 +2,8 @@ var AWS = require('aws-sdk')
 
 exports.handler = async (event) => {
   console.log(event)
-  let sourceUserUserName = event.userName.split("_")
-  let sourceUserProviderName = (sourceUserUserName[0][0].toUpperCase())+sourceUserUserName[0].slice(1)
+  const sourceUserUserName = event.userName.split('_')
+  const sourceUserProviderName = (sourceUserUserName[0][0].toUpperCase()) + sourceUserUserName[0].slice(1)
   var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
 
   var start = 'email = \"'
@@ -27,33 +27,27 @@ exports.handler = async (event) => {
   if (usersList.Users.length !== 0) {
     console.log('merge user')
     console.log(usersList.Users[0].Username)
-    let destinationUserUserName = usersList.Users[0].Username.split("_")
-    let destinationUserProviderName = (destinationUserUserName[0][0].toUpperCase())+destinationUserUserName[0].slice(1)
-
-
-
+    const destinationUserUserName = usersList.Users[0].Username.split('_')
+    const destinationUserProviderName = (destinationUserUserName[0][0].toUpperCase()) + destinationUserUserName[0].slice(1)
 
     var params2 = {
-  DestinationUser: { /* required */
-    ProviderAttributeValue: destinationUserUserName[1],
-    ProviderName: destinationUserProviderName
-  },
-  SourceUser: { /* required */
-    ProviderAttributeName: 'Cognito_Subject',
-    ProviderAttributeValue: sourceUserUserName[1],
-    ProviderName: sourceUserProviderName
-  },
-  UserPoolId: 'eu-central-1_JNcWEm7pr' /* required */
-};
+      DestinationUser: { /* required */
+        ProviderAttributeValue: destinationUserUserName[1],
+        ProviderName: destinationUserProviderName
+      },
+      SourceUser: { /* required */
+        ProviderAttributeName: 'Cognito_Subject',
+        ProviderAttributeValue: sourceUserUserName[1],
+        ProviderName: sourceUserProviderName
+      },
+      UserPoolId: 'eu-central-1_JNcWEm7pr' /* required */
+    }
 
-let response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
-console.log(response)
-return event
-
-
+    const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
+    console.log(response)
+    return event
   } else {
     event.response.autoConfirmUser = true
     return event
   }
-
 }

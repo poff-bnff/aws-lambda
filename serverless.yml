@@ -61,6 +61,20 @@ functions:
             -
                 httpApi: POST /auth
 
+    auth-cognito-get:
+        handler: src/auth/cognito/post.handler
+        name: ${self:provider.stage}-${self:service}-auth-cognito-post
+        description: Gets tokens when Cognito direct sign in
+        package:
+            include:
+                - src/auth/cognito/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /auth/cognito
+
+
     auth-eventival-get:
         handler: src/auth/eventival/get.handler
         name: ${self:provider.stage}-${self:service}-auth-eventival-get
