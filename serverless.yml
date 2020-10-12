@@ -217,6 +217,8 @@ functions:
             -
                 httpApi: PUT /favourite/{movieId}
 
+
+
     favourite-delete:
         handler: src/favourite/delete.handler
         name: ${self:provider.stage}-${self:service}-favourite-delete
