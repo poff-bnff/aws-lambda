@@ -16,14 +16,18 @@ exports.handler = async (event) => {
         S: accessToken.sub
       },
       favouriteFilm: {
-        N: pathParameters.movieId
+        N: event.pathParameters.movieId
       }
     },
-    TableName: 'favourites2'
+    TableName: 'favourites2',
+    ReturnConsumedCapacity: 'TOTAL'
   }
 
   const response = await dynamodb.putItem(params).promise()
 
-  console.log(response)
+  if (response.ConsumedCapacity.TableName='favourites2'){
+    return {result: 'success'}
+  } else {
   return response
+  }
 }
