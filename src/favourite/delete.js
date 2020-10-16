@@ -23,6 +23,6 @@ exports.handler = async (event) => {
 
   const response = await dynamodb.deleteItem(params).promise()
 
-  let deleted = {movieId: response.Attributes.favouriteFilm.N}
+  const deleted = { movieId: response.Attributes.favouriteFilm.N }
   return deleted
 }

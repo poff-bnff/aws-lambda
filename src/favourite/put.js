@@ -25,9 +25,9 @@ exports.handler = async (event) => {
 
   const response = await dynamodb.putItem(params).promise()
 
-  if (response.ConsumedCapacity.TableName='favourites2'){
-    return {result: 'success'}
+  if (response.ConsumedCapacity.TableName === 'favourites2') {
+    return { result: 'success' }
   } else {
-  return response
+    return response
   }
 }

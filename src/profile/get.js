@@ -11,8 +11,11 @@ module.exports.handler = async (event) => {
   const userProfile = { username: userDetails.Username }
 
   for (const item of userDetails.UserAttributes) {
-    console.log(item)
     userProfile[item.Name] = item.Value
+  }
+
+  if ((userProfile.name.slice((userProfile.name.lastIndexOf(' ')) + 1).localeCompare(userProfile.family_name)) === 0) {
+    userProfile.name = userProfile.name.slice(0, userProfile.name.lastIndexOf(' '))
   }
 
   if (!('birthdate' in userProfile)) {
