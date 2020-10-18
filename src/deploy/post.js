@@ -1,31 +1,16 @@
 'use strict'
 
 const aws = require('aws-sdk')
+const _h = require('../_helpers')
 
 exports.handler = async (event) => {
-  const build = new aws.CodeBuild()
-  const ssm = new aws.SSM()
+  const apiKeyAuthorized = await _h.apiKeyAuthorized(event)
 
-  const ssmKey = await ssm.getParameter({ Name: 'prod-poff-deploy-key', WithDecryption: true }).promise()
-  const ssmProjects = await ssm.getParameter({ Name: 'prod-poff-deploy-projects', WithDecryption: true }).promise()
-
-  const ssmKeyValue = ssmKey.Parameter.Value
-  const ssmProjectsValue = ssmProjects.Parameter.Value
-
-  if (`Bearer ${ssmKeyValue}` !== (event.headers.authorization || event.headers.Authorization)) {
+  if (!apiKeyAuthorized) {
     return { error: 401, message: 'unauthorized' }
   }
 
-  let body = event.body
-
-  if (!body) {
-    return { error: 400, message: 'no data' }
-  }
-
-  if (event.isBase64Encoded) {
-    body = Buffer.from(body, 'base64').toString()
-  }
-  body = JSON.parse(body)
+  const body = _h.getBody(event)
 
   if (!body.user) {
     return { error: 400, message: 'no user' }
@@ -35,10 +20,12 @@ exports.handler = async (event) => {
     return { error: 400, message: 'no project' }
   }
 
-  if (!ssmProjectsValue.split(',').includes(body.project)) {
+  const ssmProjects = await _h.ssmParameter('prod-poff-deploy-projects')
+  if (!ssmProjects.split(',').includes(body.project)) {
     return { error: 400, message: 'invalid project' }
   }
 
+  const build = new aws.CodeBuild()
   const result = await build.startBuild({
     projectName: body.project,
     environmentVariablesOverride: [{
