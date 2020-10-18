@@ -40,6 +40,8 @@ package:
         - node_modules/**
         - src/**
         - '*'
+    include:
+        - src/_helpers.js
 
 plugins:
     - serverless-plugin-git-variables
