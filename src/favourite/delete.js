@@ -3,7 +3,7 @@ const AWS = require('aws-sdk')
 const jwt = require('jsonwebtoken')
 
 exports.handler = async (event) => {
-  const accessToken = jwt.decode(((event.headers.authorization).split(' '))[1]) /* required */
+  const accessToken = jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
   const sub = accessToken.sub
 
   var dynamodb = new AWS.DynamoDB()

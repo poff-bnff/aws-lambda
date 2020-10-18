@@ -10,7 +10,7 @@ module.exports.handler = async (event) => {
   return userProfile
 }
 
-// let messageContent = jwt.decode(((event.headers.Authorization).split(' '))[1]);
+// let messageContent = jwt.decode(event.headers.authorization.split(' ')[1]);
 // if (messageContent.name && messageContent.family_name && messageContent.email){
 //   console.log('allright, log in');
 //   messageContent.qnrFilled=true;

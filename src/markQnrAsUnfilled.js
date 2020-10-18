@@ -7,14 +7,14 @@ let messageContent
 module.exports.handler = (event, context, callback) => {
   var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
   var params = {
-    AccessToken: jwt.decode(((event.headers.Authorization).split(' '))[1]) /* required */
+    AccessToken: jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
   }
   cognitoidentityserviceprovider.getUser(params, function (err, data) {
     if (err) console.log(err, err.stack) // an error occurred
     else console.log(data)
     messageContent = data // successful response
   })
-  // let messageContent = jwt.decode(((event.headers.Authorization).split(' '))[1]);
+  // let messageContent = jwt.decode(event.headers.authorization.split(' ')[1]);
   // if (messageContent.name && messageContent.family_name && messageContent.email){
   //   console.log('allright, log in');
   //   messageContent.qnrFilled=true;
