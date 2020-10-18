@@ -27,19 +27,23 @@ exports.handler = async (event) => {
     return _h.error([400, 'no limit'])
   }
 
-  const dynamodb = new aws.DynamoDB()
+  const docClient = new aws.DynamoDB.DocumentClient()
+  const _id = `${body.categoryId}-${body.code}`
 
-  const response = await dynamodb.putItem({
-    TableName: 'products',
+  const newItem = await docClient.put({
+    TableName: 'prod-poff-product',
     Item: {
-      _id: `${body.categoryId}-${body.code}`,
+      _id: _id,
       code: body.code,
       categoryId: body.categoryId,
       categoryName: body.categoryName,
       limit: body.limit,
-      used: 0
+      used: 0,
+      createdAt: (new Date()).toISOString()
     }
   }).promise()
 
-  return response
+  if (newItem) {
+    return { _id: _id }
+  }
 }
