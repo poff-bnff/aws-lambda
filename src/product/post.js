@@ -28,34 +28,30 @@ exports.handler = async (event) => {
   }
 
   const docClient = new aws.DynamoDB.DocumentClient()
-  const _id = `${body.categoryId}-${body.code}`
 
   const oldItem = await docClient.get({
     TableName: 'prod-poff-product',
     Key: {
-      _id: _id
-    },
-    AttributesToGet: [ '_id' ]
+      categoryId: body.categoryId,
+      code: body.code
+    }
   }).promise()
 
   if (oldItem.Item) {
-    return _h.error([400, `item ${oldItem.Item._id} exists`])
+    return _h.error([400, `item exists`])
   }
 
   const newItem = await docClient.put({
     TableName: 'prod-poff-product',
     Item: {
-      _id: _id,
       code: body.code,
       categoryId: body.categoryId,
       categoryName: body.categoryName,
-      limit: body.limit,
-      used: 0,
-      createdAt: (new Date()).toISOString()
+      limit: body.limit
     }
   }).promise()
 
   if (newItem) {
-    return { _id: _id }
+    return { ok: true }
   }
 }
