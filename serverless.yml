@@ -283,13 +283,13 @@ functions:
             -
                 httpApi: POST /profile
 
-    mergeAccount-trigger:
-        handler: src/cognito_triggers/mergeAccount.handler
-        name: ${self:provider.stage}-${self:service}-mergeAccount-trigger
-        description: Merges new user with old if same email
+    trigger-cognito-merge:
+        handler: src/trigger/cognito/merge.handler
+        name: ${self:provider.stage}-${self:service}-trigger-cognito-merge
+        description: Merges new Cognito user with old (if same email)
         package:
             include:
-                - src/cognito_triggers/mergeAccount.js
+                - src/trigger/cognito/merge.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
