@@ -231,6 +231,18 @@ functions:
             -
                 httpApi: GET /picture
 
+    product-post:
+        handler: src/product/post.handler
+        name: ${self:provider.stage}-${self:service}-product-post
+        description: Add new product
+        package:
+            include:
+                - src/product/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /product
 
     profile-get:
         handler: src/profile/get.handler
