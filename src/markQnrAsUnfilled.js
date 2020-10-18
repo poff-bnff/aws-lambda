@@ -1,11 +1,11 @@
 'use strict'
-var AWS = require('aws-sdk')
+var aws = require('aws-sdk')
 const jwt = require('jsonwebtoken')
 
 let messageContent
 
 module.exports.handler = (event, context, callback) => {
-  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
   var params = {
     AccessToken: jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
   }

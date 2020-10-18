@@ -1,6 +1,6 @@
 'use strict'
-const AWS = require('aws-sdk')
-const s3 = new AWS.S3()
+const aws = require('aws-sdk')
+const s3 = new aws.S3()
 
 exports.handler = async (event) => {
   console.log(event)

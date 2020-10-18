@@ -1,5 +1,5 @@
 'use strict'
-const AWS = require('aws-sdk')
+const aws = require('aws-sdk')
 const jwt = require('jsonwebtoken')
 
 exports.handler = async (event) => {
@@ -8,7 +8,7 @@ exports.handler = async (event) => {
   const accessToken = jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
   console.log(accessToken)
 
-  var dynamodb = new AWS.DynamoDB()
+  var dynamodb = new aws.DynamoDB()
 
   var params = {
     Item: {

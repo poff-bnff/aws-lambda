@@ -1,7 +1,7 @@
-var AWS = require('aws-sdk')
+var aws = require('aws-sdk')
 
 exports.handler = async (event) => {
-  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
   console.log(event.body)
   const userAttributes = JSON.parse(event.body)

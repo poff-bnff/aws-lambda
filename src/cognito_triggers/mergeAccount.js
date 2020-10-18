@@ -1,10 +1,10 @@
-var AWS = require('aws-sdk')
+var aws = require('aws-sdk')
 
 exports.handler = async (event) => {
   console.log(event)
   const sourceUserUserName = event.userName.split('_')
   const sourceUserProviderName = (sourceUserUserName[0][0].toUpperCase()) + sourceUserUserName[0].slice(1)
-  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
   var start = 'email = \"'
   var newUserEmail = event.request.userAttributes.email

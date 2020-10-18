@@ -1,11 +1,11 @@
 'use strict'
-var AWS = require('aws-sdk')
+var aws = require('aws-sdk')
 
 exports.handler = async (event) => {
   console.log(event)
   console.log(typeof (event.body))
 
-  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
 
   console.log(event.body)
   const userAttributes = JSON.parse(event.body)

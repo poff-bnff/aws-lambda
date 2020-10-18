@@ -1,8 +1,8 @@
 'use strict'
-var AWS = require('aws-sdk')
+var aws = require('aws-sdk')
 
 module.exports.handler = async (event) => {
-  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
   var params = {
     AccessToken: ((event.headers.authorization).split(' '))[1] /* required */
   }

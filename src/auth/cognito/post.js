@@ -1,5 +1,5 @@
 'use strict'
-const AWS = require('aws-sdk')
+const aws = require('aws-sdk')
 
 exports.handler = async (event) => {
   console.log(event)
@@ -7,7 +7,7 @@ exports.handler = async (event) => {
 
   const credentials = JSON.parse(event.body)
 
-  var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
   var params = {
     AuthFlow: 'ADMIN_NO_SRP_AUTH', /* required */
