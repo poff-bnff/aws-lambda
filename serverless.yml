@@ -177,6 +177,7 @@ functions:
         events:
             -
                 httpApi: POST /deploy
+
     favourite-get:
         handler: src/favourite/get.handler
         name: ${self:provider.stage}-${self:service}-favourite-get
@@ -202,8 +203,6 @@ functions:
         events:
             -
                 httpApi: PUT /favourite/{movieId}
-
-
 
     favourite-delete:
         handler: src/favourite/delete.handler
@@ -273,7 +272,7 @@ functions:
     profile-post:
         handler: src/profile/post.handler
         name: ${self:provider.stage}-${self:service}-profile-post
-        description: Post new user's profile
+        description: Add new user's profile
         package:
             include:
                 - src/profile/post.js
@@ -307,46 +306,3 @@ functions:
                 httpApi: GET /
             -
                 httpApi: GET /version
-
-    verif:
-        handler: src/verif.handler
-        name: ${self:provider.stage}-${self:service}-verif
-        description:
-        package:
-            include:
-                - src/verif.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: GET /verif
-
-    tkns:
-        handler: src/tkns.handler
-        name: ${self:provider.stage}-${self:service}-tkns
-        description:
-        package:
-            include:
-                - src/tkns.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: GET /tkns
-
-
-
-
-
-    # markQnrAsUnfilled:
-    #     handler: src/markQnrAsUnfilled.handler
-    #     name: ${self:provider.stage}-${self:service}-markQnrAsUnfilled
-    #     description:
-    #     package:
-    #         include:
-    #             - src/markQnrAsUnfilled.js
-    #     layers:
-    #         - {Ref: CommonNodeLibsLambdaLayer}
-    #     events:
-    #         -
-    #             httpApi: GET /markQnrAsUnfilled
