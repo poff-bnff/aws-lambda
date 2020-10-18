@@ -6,25 +6,25 @@ exports.handler = async (event) => {
   const apiKeyAuthorized = await _h.apiKeyAuthorized(event)
 
   if (!apiKeyAuthorized) {
-    return { error: 401, message: 'unauthorized' }
+    return _h.error([401, 'unauthorized'])
   }
 
   const body = _h.getBody(event)
 
   if (!body.code) {
-    return { error: 400, message: 'no code' }
+    return _h.error([400, 'no code'])
   }
 
   if (!body.categoryId) {
-    return { error: 400, message: 'no categoryId' }
+    return _h.error([400, 'no categoryId'])
   }
 
   if (!body.categoryName) {
-    return { error: 400, message: 'no categoryName' }
+    return _h.error([400, 'no categoryName'])
   }
 
   if (!body.limit) {
-    return { error: 400, message: 'no limit' }
+    return _h.error([400, 'no limit'])
   }
 
   const dynamodb = new aws.DynamoDB()

@@ -44,3 +44,26 @@ exports.getBody = (event) => {
     return JSON.parse(body)
   }
 }
+
+exports.error = (err) => {
+  let code
+  let message
+
+  if (err.constructor === Array) {
+    code = err[0]
+    message = err[1]
+
+    console.error(code.toString(), message)
+  } else {
+    message = err.toString()
+
+    console.error(err)
+  }
+
+  return {
+    statusCode: code || 500,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: message }),
+    isBase64Encoded: false
+  }
+}

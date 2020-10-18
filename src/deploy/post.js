@@ -7,22 +7,22 @@ exports.handler = async (event) => {
   const apiKeyAuthorized = await _h.apiKeyAuthorized(event)
 
   if (!apiKeyAuthorized) {
-    return { error: 401, message: 'unauthorized' }
+    return _h.error([401, 'unauthorized'])
   }
 
   const body = _h.getBody(event)
 
   if (!body.user) {
-    return { error: 400, message: 'no user' }
+    return _h.error([400, 'no user'])
   }
 
   if (!body.project) {
-    return { error: 400, message: 'no project' }
+    return _h.error([400, 'no project'])
   }
 
   const ssmProjects = await _h.ssmParameter('prod-poff-deploy-projects')
   if (!ssmProjects.split(',').includes(body.project)) {
-    return { error: 400, message: 'invalid project' }
+    return _h.error([400, 'invalid project'])
   }
 
   const build = new aws.CodeBuild()
