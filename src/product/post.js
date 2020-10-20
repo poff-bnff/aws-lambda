@@ -38,7 +38,7 @@ exports.handler = async (event) => {
   }).promise()
 
   if (oldItem.Item) {
-    return _h.error([400, `item exists`])
+    return _h.error([400, 'item exists'])
   }
 
   const newItem = await docClient.put({
