@@ -1,33 +1,30 @@
 'use strict'
+
 const aws = require('aws-sdk')
-const jwt = require('jsonwebtoken')
+const _h = require('../_helpers')
 
 exports.handler = async (event) => {
-  console.log(event)
+  const userId = _h.getUserId(event)
 
-  const accessToken = jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
-  console.log(accessToken)
-
-  var dynamodb = new aws.DynamoDB()
-
-  var params = {
-    Item: {
-      cognitoId: {
-        S: accessToken.sub
-      },
-      favouriteFilm: {
-        N: event.pathParameters.movieId
-      }
-    },
-    TableName: 'favourites2',
-    ReturnConsumedCapacity: 'TOTAL'
+  if (!userId) {
+    return _h.error([401, 'Unauthorized'])
   }
 
-  const response = await dynamodb.putItem(params).promise()
+  if (!event.pathParameters.movieId) {
+    return _h.error([400, 'No movieId'])
+  }
 
-  if (response.ConsumedCapacity.TableName === 'favourites2') {
-    return { result: 'success' }
-  } else {
-    return response
+  const docClient = new aws.DynamoDB.DocumentClient()
+
+  const newItem = await docClient.put({
+    TableName: 'prod-poff-favourite',
+    Item: {
+      userId: userId,
+      movieId: event.pathParameters.movieId
+    }
+  }).promise()
+
+  if (newItem) {
+    return { ok: true }
   }
 }

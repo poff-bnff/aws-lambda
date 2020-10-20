@@ -1,28 +1,30 @@
 'use strict'
+
 const aws = require('aws-sdk')
-const jwt = require('jsonwebtoken')
+const _h = require('../_helpers')
 
 exports.handler = async (event) => {
-  const accessToken = jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
-  const sub = accessToken.sub
+  const userId = _h.getUserId(event)
 
-  var dynamodb = new aws.DynamoDB()
-
-  var params = {
-    Key: {
-      cognitoId: {
-        S: sub
-      },
-      favouriteFilm: {
-        N: event.pathParameters.movieId
-      }
-    },
-    TableName: 'favourites2',
-    ReturnValues: 'ALL_OLD'
+  if (!userId) {
+    return _h.error([401, 'Unauthorized'])
   }
 
-  const response = await dynamodb.deleteItem(params).promise()
+  if (!event.pathParameters.movieId) {
+    return _h.error([400, 'No movieId'])
+  }
 
-  const deleted = { movieId: response.Attributes.favouriteFilm.N }
-  return deleted
+  const docClient = new aws.DynamoDB.DocumentClient()
+
+  const deletedItem = await docClient.delete({
+    TableName: 'prod-poff-favourite',
+    Key: {
+      userId: userId,
+      movieId: event.pathParameters.movieId
+    }
+  }).promise()
+
+  if (deletedItem) {
+    return { ok: true }
+  }
 }

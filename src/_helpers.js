@@ -1,5 +1,7 @@
 'use strict'
+
 const aws = require('aws-sdk')
+const jwt = require('jsonwebtoken')
 const querystring = require('querystring')
 
 const getHeader = (event, headerKey) => {
@@ -27,6 +29,14 @@ exports.ssmParameter = ssmParameter
 exports.apiKeyAuthorized = async (event) => {
   const ssmKeyValue = await ssmParameter('prod-poff-deploy-key')
   return `Bearer ${ssmKeyValue}` === getHeader(event, 'authorization')
+}
+
+exports.getUserId = (event) => {
+  const token = getHeader(event, 'authorization').replace('Bearer ', '')
+
+  if (!token) { return }
+
+  return jwt.decode(token).sub
 }
 
 exports.getBody = (event) => {

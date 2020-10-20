@@ -1,34 +1,24 @@
 'use strict'
+
 const aws = require('aws-sdk')
-const jwt = require('jsonwebtoken')
+const _h = require('../_helpers')
 
 exports.handler = async (event) => {
-  const accessToken = jwt.decode(event.headers.authorization.split(' ')[1]) /* required */
-  const sub = accessToken.sub
+  const userId = _h.getUserId(event)
 
-  var dynamodb = new aws.DynamoDB()
+  if (!userId) {
+    return _h.error([401, 'Unauthorized'])
+  }
 
-  var params = {
+  const docClient = new aws.DynamoDB.DocumentClient()
+
+  const favourites = await docClient.query({
+    TableName: 'prod-poff-favourite',
+    KeyConditionExpression: 'userId = :userId',
     ExpressionAttributeValues: {
-      ':v1': {
-        S: sub
-      }
-    },
-    KeyConditionExpression: 'cognitoId = :v1',
-    TableName: 'favourites2'
-  }
+      ':userId': userId
+    }
+  }).promise()
 
-  const response = await dynamodb.query(params).promise()
-  const myFavouriteFilms = {
-    films: []
-  }
-
-  for (const item of response.Items) {
-    console.log(item.favouriteFilm.N)
-    myFavouriteFilms.films.push(item.favouriteFilm.N)
-  }
-  // console.log(response)
-  // console.log(response.Items[0])
-
-  return myFavouriteFilms
+  return favourites.Items.map(i => [ i.movieId ]).flat()
 }
