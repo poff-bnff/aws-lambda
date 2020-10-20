@@ -77,3 +77,11 @@ exports.error = (err) => {
     isBase64Encoded: false
   }
 }
+
+exports.redirect = (url) => {
+  return {
+    statusCode: 302,
+    headers: { Location: url },
+    body: null
+  }
+}
