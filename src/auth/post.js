@@ -3,8 +3,6 @@
 const aws = require('aws-sdk')
 
 exports.handler = async (event) => {
-  console.log(event)
-  console.log(event.body)
 
   const credentials = JSON.parse(event.body)
 
@@ -20,7 +18,7 @@ exports.handler = async (event) => {
   console.log(params)
 
   const response = await cognitoidentityserviceprovider.adminInitiateAuth(params).promise()
-  console.log(response)
+  var response2 = response.AuthenticationResult
 
-  return response
+  return response2
 }
