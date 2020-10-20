@@ -1,11 +1,11 @@
 'use strict'
 
-// - - var myUri = 'https://dev.inscaping.eu/${lang_path}'
-const myUri = 'http://localhost:4000/'
-// - - var myUri = `http://localhost:5000/${lang_path}`
+const _h = require('../../_helpers')
 
-// - - var myUri = `${process.env['DOMAIN']}/${lang_path}`
+exports.handler = async (event) => {
+  const domain = await _h.ssmParameter('prod-poff-cognito-domain')
+  const clientId = await _h.ssmParameter('prod-poff-cognito-id')
+  const referer = _h.getHeader(event, 'referer')
 
-exports.handler = async () => {
-  return { providerUrl: `https://poffuserlogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=token&client_id=55092v28eip9fdakv3hv3j548u&redirect_uri=${myUri}login/&identity_provider=Facebook` }
+  return _h.redirect(`https://${domain}/oauth2/authorize?response_type=token&client_id=${clientId}&redirect_uri=${referer}login/&identity_provider=Facebook`)
 }

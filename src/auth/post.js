@@ -1,24 +1,24 @@
 'use strict'
 
 const aws = require('aws-sdk')
+const _h = require('../_helpers')
 
 exports.handler = async (event) => {
+  const body = _h.getBody(event)
+  const clientId = await _h.ssmParameter('prod-poff-cognito-id')
+  const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
 
-  const credentials = JSON.parse(event.body)
+  const cognito = new aws.CognitoIdentityServiceProvider()
 
-  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
+  const response = await cognito.adminInitiateAuth({
+    AuthFlow: 'ADMIN_NO_SRP_AUTH',
+    ClientId: clientId,
+    UserPoolId: userPoolId,
+    AuthParameters: {
+      USERNAME: body.userName,
+      PASSWORD: body.password
+    }
+  }).promise()
 
-  var params = {
-    AuthFlow: 'ADMIN_NO_SRP_AUTH', /* required */
-    ClientId: '38o2sdp2bluc1kik2v4fni1hj2', /* required */
-    UserPoolId: 'eu-central-1_JNcWEm7pr', /* required */
-    AuthParameters: { USERNAME: credentials.userName, PASSWORD: credentials.password }
-  }
-
-  console.log(params)
-
-  const response = await cognitoidentityserviceprovider.adminInitiateAuth(params).promise()
-  var response2 = response.AuthenticationResult
-
-  return response2
+  return response.AuthenticationResult
 }
