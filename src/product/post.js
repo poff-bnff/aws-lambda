@@ -24,6 +24,10 @@ exports.handler = async (event) => {
     return _h.error([400, 'No categoryName'])
   }
 
+  if (!body.price) {
+    return _h.error([400, 'No price'])
+  }
+
   if (!body.limit) {
     return _h.error([400, 'No limit'])
   }
@@ -48,6 +52,7 @@ exports.handler = async (event) => {
       code: body.code,
       categoryId: body.categoryId,
       categoryName: body.categoryName,
+      price: body.price,
       limit: body.limit
     }
   }).promise()
