@@ -294,6 +294,19 @@ functions:
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
+    trigger-cognito-matchUser:
+        handler: src/trigger/cognito/matchUser.handler
+        name: ${self:provider.stage}-${self:service}-trigger-cognito-matchUser
+        description: Finds existing Cognito user (if same email)
+        package:
+            include:
+                - src/trigger/cognito/matchUser.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /match_user
+
     version:
         handler: src/version/get.handler
         name: ${self:provider.stage}-${self:service}-version
