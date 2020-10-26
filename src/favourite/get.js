@@ -20,5 +20,5 @@ exports.handler = async (event) => {
     }
   }).promise()
 
-  return favourites.Items.map(i => [ i.movieId ]).flat()
+  return favourites.Items.map(i => [i.movieId]).flat()
 }

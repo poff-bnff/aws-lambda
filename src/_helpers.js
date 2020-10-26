@@ -13,6 +13,11 @@ const getHeader = (event, headerKey) => {
 }
 exports.getHeader = getHeader
 
+const getAuthorization = (event) => {
+  return getHeader(event, 'authorization').replace('Bearer ', '')
+}
+exports.getAuthorization = getAuthorization
+
 const ssmParameters = {}
 const ssmParameter = async (name) => {
   if (ssmParameters[name]) { return ssmParameters[name] }
@@ -32,11 +37,18 @@ exports.apiKeyAuthorized = async (event) => {
 }
 
 exports.getUserId = (event) => {
-  const token = getHeader(event, 'authorization').replace('Bearer ', '')
+  const token = getAuthorization(event)
 
   if (!token) { return }
 
   return jwt.decode(token).sub
+}
+
+exports.getUserEmail = (event) => {
+  const cognito = new aws.CognitoIdentityServiceProvider()
+  const user = await cognito.getUser({ AccessToken: getAuthorization(event) }).promise()
+
+  return user.UserAttributes.find(d => d.Name === 'email').Value
 }
 
 exports.getBody = (event) => {
