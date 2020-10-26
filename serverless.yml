@@ -245,6 +245,19 @@ functions:
             -
                 httpApi: POST /product
 
+    product-put:
+        handler: src/product/put.handler
+        name: ${self:provider.stage}-${self:service}-product-put
+        description: Reserve product to person
+        package:
+            include:
+                - src/product/put.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: PUT /product/{categoryId}
+
     profile-get:
         handler: src/profile/get.handler
         name: ${self:provider.stage}-${self:service}-profile-get
