@@ -6,18 +6,18 @@ const https = require('https')
 const _h = require('../_helpers')
 
 const postToMaksekeskus = async (postData) => {
-  console.log(postData)
+  const mkId = await _h.ssmParameter('prod-poff-maksekeskus-id')
+  const mkKey = await _h.ssmParameter('prod-poff-maksekeskus-secret-key')
+
+  console.log(mkId, mkKey, postData);
 
   return new Promise((resolve, reject) => {
-    const mkId = await _h.ssmParameter('prod-poff-maksekeskus-id')
-    const mkKey = await _h.ssmParameter('prod-poff-maksekeskus-secret-key')
-
     const options = {
       hostname: 'api-test.maksekeskus.ee',
       path: '/v1/transactions',
       method: 'POST',
       headers: {
-        Authorization: `Basic ${mkId}:${mkKey}`,
+        Authorization: 'Basic ' + Buffer.from(`${mkId}:${mkKey}`).toString('base64'),
         'Content-Type': 'application/json'
       }
     }
@@ -42,6 +42,9 @@ const postToMaksekeskus = async (postData) => {
 
 exports.handler = async (event) => {
   const userId = _h.getUserId(event)
+  const userEmail = await _h.getUserEmail(event)
+  const userIp = _get(event, 'requestContext.http.sourceIp')
+
   const categoryId = event.pathParameters.categoryId
   const body = _h.getBody(event)
 
@@ -51,6 +54,10 @@ exports.handler = async (event) => {
 
   if (!categoryId) {
     return _h.error([400, 'No categoryId'])
+  }
+
+  if (!paymentMethod) {
+    return _h.error([400, 'No paymentMethod'])
   }
 
   const docClient = new aws.DynamoDB.DocumentClient()
@@ -86,21 +93,23 @@ exports.handler = async (event) => {
 
   const mkResponse = await postToMaksekeskus({
     customer: {
-      email: _h.getUserEmail(event),
-      ip: _get(event, 'requestContext.http.sourceIp'),
+      email: userEmail,
+      ip: userIp,
       country: 'ee',
       locale: body.locale || 'et'
     },
     transaction: {
       amount: item.price,
-      currency : 'EUR',
-      merchant_data : {
+      currency: 'EUR',
+      merchant_data: JSON.stringify({
         userId: _h.getUserId(event),
         categoryId: item.categoryId,
         code: item.code
-      }
+      })
     }
   })
+
+  const paymentMethod = [...mkResponse.payment_methods.banklinks, ...mkResponse.payment_methods.cards, ...mkResponse.payment_methods.other, ...mkResponse.payment_methods.payLater ].filter(m => m.name === body.paymentMethod)
 
   if (updatedItem) {
     return mkResponse

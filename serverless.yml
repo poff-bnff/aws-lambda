@@ -245,18 +245,31 @@ functions:
             -
                 httpApi: POST /product
 
-    product-put:
-        handler: src/product/put.handler
-        name: ${self:provider.stage}-${self:service}-product-put
-        description: Reserve product to person
+    buy-get:
+        handler: src/buy/get.handler
+        name: ${self:provider.stage}-${self:service}-buy-get
+        description: Get payment options list
         package:
             include:
-                - src/product/put.js
+                - src/buy/get.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: PUT /product/{categoryId}
+                httpApi: GET /buy
+
+    buy-put:
+        handler: src/buy/put.handler
+        name: ${self:provider.stage}-${self:service}-buy-put
+        description: Reserve product to person
+        package:
+            include:
+                - src/buy/put.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: PUT /buy/{categoryId}
 
     profile-get:
         handler: src/profile/get.handler
