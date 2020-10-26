@@ -17,7 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "jsonwebtoken": "8.5.1",
-    "jwk-to-pem": "2.0.4"
+    "jwk-to-pem": "2.0.4",
+    "lodash": "4.17.20"
   },
   "devDependencies": {
     "serverless": "2.5.0",
