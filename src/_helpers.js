@@ -44,7 +44,7 @@ exports.getUserId = (event) => {
   return jwt.decode(token).sub
 }
 
-exports.getUserEmail = (event) => {
+exports.getUserEmail = async (event) => {
   const cognito = new aws.CognitoIdentityServiceProvider()
   const user = await cognito.getUser({ AccessToken: getAuthorization(event) }).promise()
 
