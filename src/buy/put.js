@@ -66,7 +66,7 @@ exports.handler = async (event) => {
     ExpressionAttributeValues: {
       ':categoryId': categoryId
     },
-    FilterExpression: 'attribute_not_exists(reservedAt)'
+    FilterExpression: 'attribute_not_exists(reservedTime)'
   }).promise()
 
   if (items.Items.length === 0) {
@@ -81,16 +81,16 @@ exports.handler = async (event) => {
       categoryId: item.categoryId,
       code: item.code
     },
-    UpdateExpression: 'SET reservedAt = :reservedAt, reservedTo = :reservedTo',
+    UpdateExpression: 'SET reservedTime = :reservedTime, reservedTo = :reservedTo',
     ExpressionAttributeValues: {
-      ':reservedAt': (new Date()).toISOString(),
+      ':reservedTime': (new Date()).toISOString(),
       ':reservedTo': userId
     },
     ReturnValues: 'UPDATED_NEW'
   }).promise()
 
   if (!updatedItem) {
-    return _h.error([500, 'Reservation failed'])
+    return _h.error([500, 'Failed to save reservation'])
   }
 
   const mkResponse = await postToMaksekeskus({
@@ -125,6 +125,26 @@ exports.handler = async (event) => {
 
   if (!paymentMethod) {
     return _h.error([400, 'No paymentMethod'])
+  }
+
+  const updatedItem2 = await docClient.update({
+    TableName: 'prod-poff-product',
+    Key: {
+      categoryId: item.categoryId,
+      code: item.code
+    },
+    UpdateExpression: 'SET paymentMethodId = :paymentMethodId, transactionId = :transactionId, transactionTime = :transactionTime, transactionAmount = :transactionAmount',
+    ExpressionAttributeValues: {
+      ':paymentMethodId': body.paymentMethodId,
+      ':transactionId': mkResponse.id,
+      ':transactionTime': mkResponse.created_at,
+      ':transactionAmount': mkResponse.amount
+    },
+    ReturnValues: 'UPDATED_NEW'
+  }).promise()
+
+  if (!updatedItem2) {
+    return _h.error([500, 'Failed to save transaction'])
   }
 
   return { url: paymentMethod.url }
