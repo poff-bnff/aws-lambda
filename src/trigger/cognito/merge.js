@@ -78,7 +78,7 @@ exports.handler = async (event) => {
 
 
   } else {
-    event.response.autoConfirmUser = true
+
     return event
   }
 }
