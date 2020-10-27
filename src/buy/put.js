@@ -56,8 +56,12 @@ exports.handler = async (event) => {
     return _h.error([400, 'No categoryId'])
   }
 
-  if (!paymentMethod) {
+  if (!body.paymentMethod) {
     return _h.error([400, 'No paymentMethod'])
+  }
+
+  if (!body.paymentCountry) {
+    return _h.error([400, 'No paymentCountry'])
   }
 
   const docClient = new aws.DynamoDB.DocumentClient()
@@ -109,9 +113,16 @@ exports.handler = async (event) => {
     }
   })
 
-  const paymentMethod = [...mkResponse.payment_methods.banklinks, ...mkResponse.payment_methods.cards, ...mkResponse.payment_methods.other, ...mkResponse.payment_methods.payLater ].filter(m => m.name === body.paymentMethod)
+  const paymentMethod = [
+    ...mkResponse.payment_methods.banklinks,
+    ...mkResponse.payment_methods.cards,
+    ...mkResponse.payment_methods.other,
+    ...mkResponse.payment_methods.payLater
+  ].filter(m => m.name === body.paymentMethod && m.country === body.paymentCountry)
 
-  if (updatedItem) {
-    return mkResponse
+  if (!paymentMethod) {
+    return _h.error([400, 'No paymentMethod'])
   }
+
+  return { url: paymentMethod.url }
 }
