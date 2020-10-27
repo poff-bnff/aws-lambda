@@ -56,12 +56,8 @@ exports.handler = async (event) => {
     return _h.error([400, 'No categoryId'])
   }
 
-  if (!body.paymentMethod) {
-    return _h.error([400, 'No paymentMethod'])
-  }
-
-  if (!body.paymentCountry) {
-    return _h.error([400, 'No paymentCountry'])
+  if (!body.paymentMethodId) {
+    return _h.error([400, 'No paymentMethodId'])
   }
 
   const docClient = new aws.DynamoDB.DocumentClient()
@@ -118,7 +114,7 @@ exports.handler = async (event) => {
     ...mkResponse.payment_methods.cards,
     ...mkResponse.payment_methods.other,
     ...mkResponse.payment_methods.payLater
-  ].filter(m => m.name === body.paymentMethod && m.country === body.paymentCountry)
+  ].filter(m => [m.country, m.name].join('_').toUpperCase() === body.paymentMethodId)
 
   if (!paymentMethod) {
     return _h.error([400, 'No paymentMethod'])

@@ -47,6 +47,7 @@ exports.handler = async (event) => {
   return {
     banklinks: mkResponse.payment_methods.banklinks.map(m => {
       return {
+        id: [m.country, m.name].join('_').toUpperCase(),
         name: m.name,
         country: m.country,
         logo: m.logo_url
@@ -54,6 +55,7 @@ exports.handler = async (event) => {
     }),
     cards: mkResponse.payment_methods.cards.map(m => {
       return {
+        id: [m.country, m.name].join('_').toUpperCase(),
         name: m.name,
         country: m.country,
         logo: m.logo_url
@@ -61,6 +63,7 @@ exports.handler = async (event) => {
     }),
     other: mkResponse.payment_methods.other.map(m => {
       return {
+        id: [m.country, m.name].join('_').toUpperCase(),
         name: m.name,
         country: m.country,
         logo: m.logo_url
@@ -68,6 +71,7 @@ exports.handler = async (event) => {
     }),
     payLater: mkResponse.payment_methods.payLater.map(m => {
       return {
+        id: [m.country, m.name].join('_').toUpperCase(),
         name: m.name,
         country: m.country,
         logo: m.logo_url
