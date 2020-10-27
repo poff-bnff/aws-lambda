@@ -48,28 +48,28 @@ exports.handler = async (event) => {
     banklinks: mkResponse.payment_methods.banklinks.map(m => {
       return {
         name: m.name,
-        countries: countries,
+        country: m.country,
         logo: m.logo_url
       }
     }),
     cards: mkResponse.payment_methods.cards.map(m => {
       return {
         name: m.name,
-        countries: countries,
+        country: m.country,
         logo: m.logo_url
       }
     }),
     other: mkResponse.payment_methods.other.map(m => {
       return {
         name: m.name,
-        countries: countries,
+        country: m.country,
         logo: m.logo_url
       }
     }),
     payLater: mkResponse.payment_methods.payLater.map(m => {
       return {
         name: m.name,
-        countries: countries,
+        country: m.country,
         logo: m.logo_url
       }
     }),
