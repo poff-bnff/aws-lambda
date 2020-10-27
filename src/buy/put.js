@@ -9,8 +9,6 @@ const postToMaksekeskus = async (postData) => {
   const mkId = await _h.ssmParameter('prod-poff-maksekeskus-id')
   const mkKey = await _h.ssmParameter('prod-poff-maksekeskus-secret-key')
 
-  console.log(mkId, mkKey, postData);
-
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'api-test.maksekeskus.ee',
@@ -90,6 +88,10 @@ exports.handler = async (event) => {
     },
     ReturnValues: 'UPDATED_NEW'
   }).promise()
+
+  if (!updatedItem) {
+    return _h.error([500, 'Reservation failed'])
+  }
 
   const mkResponse = await postToMaksekeskus({
     customer: {

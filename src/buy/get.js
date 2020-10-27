@@ -76,7 +76,6 @@ exports.handler = async (event) => {
         country: m.country,
         logo: m.logo_url
       }
-    }),
-
+    })
   }
 }
