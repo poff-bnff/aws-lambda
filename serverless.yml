@@ -258,6 +258,19 @@ functions:
             -
                 httpApi: GET /buy
 
+    buy-post:
+        handler: src/buy/post.handler
+        name: ${self:provider.stage}-${self:service}-buy-post
+        description: Sell product to person (callback from maksekeskus.ee)
+        package:
+            include:
+                - src/buy/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /buy
+
     buy-put:
         handler: src/buy/put.handler
         name: ${self:provider.stage}-${self:service}-buy-put
