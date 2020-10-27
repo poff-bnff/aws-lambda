@@ -24,15 +24,6 @@ exports.handler = async (event) => {
   const update = await cognitoidentityserviceprovider.updateUserAttributes(params).promise()
   console.log(update, 'put')
 
-  // cognitoidentityserviceprovider.updateUserAttributes(params, function (err, data) {
-  //   if (err) {
-  //     console.log(err, err.stack) // an error occurred
-  //     return JSON.stringify(err)
-  //   } else {
-  //     console.log(data) // successful respons
-  //     return JSON.stringify(data)
-  //   }
-  // })
+  return {status: ok}
 
-  // console.log(update)
 }
