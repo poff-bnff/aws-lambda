@@ -121,7 +121,7 @@ exports.handler = async (event) => {
     ...mkResponse.payment_methods.cards,
     ...mkResponse.payment_methods.other,
     ...mkResponse.payment_methods.payLater
-  ].filter(m => [m.country, m.name].join('_').toUpperCase() === body.paymentMethodId)
+  ].find(m => [m.country, m.name].join('_').toUpperCase() === body.paymentMethodId)
 
   if (!paymentMethod) {
     return _h.error([400, 'No paymentMethod'])
