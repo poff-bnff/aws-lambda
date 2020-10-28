@@ -19,11 +19,19 @@ exports.handler = async (event) => {
       userAttributes.pop(i)
     }
 
+    if (i.Name === 'phone_number') {
+      console.log('phone_number ' + i.Value)
+      if (i.Value[0] !== '+'){
+        i.Value = '+' + i.Value
+        console.log(i.Value)
+      }
+    }
+
   }
 
 
   var params = {
-    ClientId: '38o2sdp2bluc1kik2v4fni1hj2', /* required */
+    ClientId: 'fknnfqoit9r4et7qb8982hlh7', /* required */
     Password: password, /* required */
     Username: email, /* required */
 

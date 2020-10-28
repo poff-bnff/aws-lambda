@@ -40,10 +40,9 @@ exports.handler = async (event) => {
     let destinationUserProviderName
     let redirectUrl
 
-    if (destinationUserUserName[0] === 'facebook' || destinationUserUserName[0] === 'google'){
-    destinationUserProviderName = (destinationUserUserName[0][0].toUpperCase()) + destinationUserUserName[0].slice(1)
-    destinationUserUserName = destinationUserUserName[1]
-
+    if (destinationUserUserName[0] === 'facebook' || destinationUserUserName[0] === 'google') {
+      destinationUserProviderName = (destinationUserUserName[0][0].toUpperCase()) + destinationUserUserName[0].slice(1)
+      destinationUserUserName = destinationUserUserName[1]
     } else {
       destinationUserProviderName = 'Cognito'
       destinationUserUserName = destinationUserUserName.toString()
@@ -69,16 +68,13 @@ exports.handler = async (event) => {
     const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
     console.log(response)
 
-    if (destinationUserProviderName === 'Facebook'){
+    if (destinationUserProviderName === 'Facebook') {
       return { providerUrl: `https://poffuserlogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=token&client_id=55092v28eip9fdakv3hv3j548u&redirect_uri=${myUri}login/&identity_provider=Facebook` }
     }
-    if (destinationUserProviderName === 'Google'){
+    if (destinationUserProviderName === 'Google') {
       return { providerUrl: `https://poffuserlogin.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=token&client_id=55092v28eip9fdakv3hv3j548u&redirect_uri=${myUri}login/&identity_provider=Google` }
     }
-
-
   } else {
-
     return event
   }
 }
