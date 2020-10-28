@@ -65,6 +65,7 @@ exports.handler = async (event) => {
 
     const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
     console.log(response)
+    return event
   } else {
     return event
   }

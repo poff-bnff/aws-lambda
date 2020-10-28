@@ -24,5 +24,5 @@ exports.handler = async (event) => {
   const update = await cognitoidentityserviceprovider.updateUserAttributes(params).promise()
   console.log(update, 'put')
 
-  return { status: ok }
+  return { status: 'ok' }
 }
