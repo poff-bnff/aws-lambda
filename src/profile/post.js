@@ -1,6 +1,11 @@
+'use strict'
+
+const _h = require('../../_helpers')
 var aws = require('aws-sdk')
 
 exports.handler = async (event) => {
+  const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
+
   var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
   const userAttributes = JSON.parse(event.body)
@@ -21,27 +26,23 @@ exports.handler = async (event) => {
 
     if (i.Name === 'phone_number') {
       console.log('phone_number ' + i.Value)
-      if (i.Value[0] !== '+'){
+      if (i.Value[0] !== '+') {
         i.Value = '+' + i.Value
         console.log(i.Value)
       }
     }
-
   }
 
-
   var params = {
-    ClientId: 'fknnfqoit9r4et7qb8982hlh7', /* required */
+    ClientId: clientId, /* required */
     Password: password, /* required */
     Username: email, /* required */
 
-      UserAttributes: userAttributes
+    UserAttributes: userAttributes
 
   }
 
   const response = await cognitoidentityserviceprovider.signUp(params).promise()
 
-
   return response
-
 }
