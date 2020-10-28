@@ -1,6 +1,6 @@
 'use strict'
 
-const _h = require('../../_helpers')
+const _h = require('../_helpers')
 var aws = require('aws-sdk')
 
 exports.handler = async (event) => {
