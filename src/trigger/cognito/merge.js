@@ -36,15 +36,13 @@ exports.handler = async (event) => {
 
     destinationUserUserName = usersList.Users[0].Username.split('_')
 
-    if (usersList.Users.length > 1){
+    if (usersList.Users.length > 1) {
       usersList = usersList.Users
-      usersList.sort(function(a, b){return new Date(a.UserCreateDate) - new Date(b.UserCreateDate)})
+      usersList.sort(function (a, b) { return new Date(a.UserCreateDate) - new Date(b.UserCreateDate) })
       console.log(usersList)
 
       destinationUserUserName = usersList[0].Username.split('_')
     }
-
-
 
     let destinationUserProviderName
 

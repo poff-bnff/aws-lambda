@@ -5,6 +5,7 @@ const _h = require('../_helpers')
 
 exports.handler = async (event) => {
   const body = _h.getBody(event)
+
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
 

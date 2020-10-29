@@ -9,7 +9,12 @@ exports.handler = async (event) => {
   console.log(event)
   var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
-  var filter1 = 'email =' + event.request.userAttributes.email
+  // var filter1 = 'email =' + event.request.userAttributes.email
+  var email = 'siimsutt@hotmail.com'
+  var start = 'email = \"'
+  var newUserEmail = email
+  var end = '\"'
+  var filter1 = start.concat(newUserEmail, end)
   console.log(filter1)
 
   var params = {
@@ -25,5 +30,8 @@ exports.handler = async (event) => {
   console.log('usersList:')
   console.log(usersList)
 
-  return event
+  if (usersList.Users.length>0) {
+    return true
+  } else
+  return false
 }

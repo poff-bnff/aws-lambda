@@ -323,6 +323,19 @@ functions:
             -
                 httpApi: POST /profile
 
+    profile-pswd-post:
+        handler: src/profile/pswd/post.handler
+        name: ${self:provider.stage}-${self:service}-profile-pswd-post
+        description: Sends code to user email.
+        package:
+            include:
+                - src/profile/pswd/post.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /profile/pswd
+
     trigger-cognito-merge:
         handler: src/trigger/cognito/merge.handler
         name: ${self:provider.stage}-${self:service}-trigger-cognito-merge
