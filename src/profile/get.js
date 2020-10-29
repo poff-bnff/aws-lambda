@@ -27,11 +27,6 @@ module.exports.handler = async (event) => {
       }
     }
   }
-  console.log(new Date(dateCreated))
-
-  let now = new Date()
-  console.log(now)
-  now = now.getTime()
 
   // profiil täidetud
   if ('birthdate' in userProfile && 'email' in userProfile && 'address' in userProfile && 'family_name' in userProfile && 'name' in userProfile && 'gender' in userProfile && 'phone_number' in userProfile) {
@@ -41,5 +36,6 @@ module.exports.handler = async (event) => {
   } else if ('email' in userProfile && 'family_name' in userProfile && 'name' in userProfile) {
     userProfile.profile_filled = false
   }
+
   return userProfile
 }

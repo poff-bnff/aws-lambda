@@ -333,18 +333,15 @@ functions:
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
-    trigger-cognito-matchUser:
-        handler: src/trigger/cognito/matchUser.handler
-        name: ${self:provider.stage}-${self:service}-trigger-cognito-matchUser
-        description: Finds existing Cognito user (if same email)
+    trigger-cognito-checkIfUserExists:
+        handler: src/trigger/cognito/checkIfUserExists.handler
+        name: ${self:provider.stage}-${self:service}-trigger-cognito-checkIfUserExists
+        description: Checks if user exists, if not returns info.
         package:
             include:
-                - src/trigger/cognito/matchUser.js
+                - src/trigger/cognito/checkIfUserExists.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: POST /match_user
 
     version:
         handler: src/version/get.handler

@@ -5,6 +5,7 @@ var aws = require('aws-sdk')
 
 exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
+  let destinationUserUserName
 
   console.log(event)
   const sourceUserUserName = event.userName.split('_')
@@ -26,15 +27,24 @@ exports.handler = async (event) => {
     Filter: filter1
   }
 
-  const usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
+  let usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
   console.log('usersList:')
   console.log(usersList)
 
   if (usersList.Users.length !== 0) {
     console.log('merge user')
 
-    let destinationUserUserName = usersList.Users[0].Username.split('_')
-    console.log(destinationUserUserName)
+    destinationUserUserName = usersList.Users[0].Username.split('_')
+
+    if (usersList.Users.length > 1){
+      usersList = usersList.Users
+      usersList.sort(function(a, b){return new Date(a.UserCreateDate) - new Date(b.UserCreateDate)})
+      console.log(usersList)
+
+      destinationUserUserName = usersList[0].Username.split('_')
+    }
+
+
 
     let destinationUserProviderName
 
