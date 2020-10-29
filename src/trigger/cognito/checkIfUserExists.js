@@ -9,8 +9,8 @@ exports.handler = async (event) => {
   console.log(event)
   var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
-  // var filter1 = 'email =' + event.request.userAttributes.email
-  var email = 'siimsutt@hotmail.com'
+
+  var email = event.userName
   var start = 'email = \"'
   var newUserEmail = email
   var end = '\"'
