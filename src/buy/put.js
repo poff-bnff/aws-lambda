@@ -46,20 +46,25 @@ exports.handler = async (event) => {
   const categoryId = event.pathParameters.categoryId
   const body = _h.getBody(event)
 
+  console.log('log1');
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
   }
+  console.log('log2');
 
   if (!categoryId) {
     return _h.error([400, 'No categoryId'])
   }
+  console.log('log3');
 
   if (!body.paymentMethodId) {
     return _h.error([400, 'No paymentMethodId'])
   }
+  console.log('log4');
 
   const docClient = new aws.DynamoDB.DocumentClient()
 
+  console.log('log5');
   const items = await docClient.query({
     TableName: 'prod-poff-product',
     KeyConditionExpression: 'categoryId = :categoryId',
@@ -68,14 +73,16 @@ exports.handler = async (event) => {
     },
     FilterExpression: 'attribute_not_exists(reservedTime)'
   }).promise()
+  console.log('log6');
 
   if (items.Items.length === 0) {
     return _h.error([404, 'No items'])
   }
 
   const item = items.Items[0]
+  console.log('log7');
 
-  const updatedItem = await docClient.update({
+  const update_options = {
     TableName: 'prod-poff-product',
     Key: {
       categoryId: item.categoryId,
@@ -87,12 +94,15 @@ exports.handler = async (event) => {
       ':reservedTo': userId
     },
     ReturnValues: 'UPDATED_NEW'
-  }).promise()
+  }
+  const updatedItem = await docClient.update(update_options).promise()
+  console.log('log8', update_options, updatedItem);
 
   if (!updatedItem) {
     return _h.error([500, 'Failed to save reservation'])
   }
 
+  console.log('log9');
   const mkResponse = await postToMaksekeskus({
     customer: {
       email: userEmail,
