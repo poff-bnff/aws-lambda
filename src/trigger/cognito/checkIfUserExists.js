@@ -9,7 +9,6 @@ exports.handler = async (event) => {
   console.log(event)
   var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
-
   var email = event.userName
   var start = 'email = \"'
   var newUserEmail = email
@@ -30,8 +29,7 @@ exports.handler = async (event) => {
   console.log('usersList:')
   console.log(usersList)
 
-  if (usersList.Users.length>0) {
+  if (usersList.Users.length > 0) {
     return true
-  } else
-  return false
+  } else { return false }
 }
