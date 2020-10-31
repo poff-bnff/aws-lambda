@@ -3,6 +3,16 @@
 const aws = require('aws-sdk')
 const jwt = require('jsonwebtoken')
 const querystring = require('querystring')
+const url = require('url')
+
+
+const getRefererHost = (event) => {
+  const referer_url = url.parse(getHeader(event, 'referer'))
+  const referer_protocol = referer_url.protocol
+  const referer_host = referer_url.host
+  return `${referer_protocol}//${referer_host}`
+}
+exports.getRefererHost = getRefererHost
 
 const getHeader = (event, headerKey) => {
   const headers = Object.fromEntries(
