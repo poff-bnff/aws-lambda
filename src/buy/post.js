@@ -37,7 +37,7 @@ exports.handler = async (event) => {
       Item: {
         cognitoSub: product.userId,
         passCode: product.code,
-        test: 'test1'
+        category: product.categoryId
       }
     }).promise()
 
