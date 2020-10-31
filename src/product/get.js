@@ -26,26 +26,25 @@ exports.handler = async (event) => {
   console.log(passes.Items[0].passCode);
   console.log(passes.Items[0].category);
 
-let passesWithInfo = []
+  let passesWithInfo = []
 
-for (let pass of passes.Items){
+  for (let pass of passes.Items) {
 
-  const passWithInfo = await docClient.query({
-    TableName: 'prod-poff-product',
-    KeyConditionExpression: 'categoryId = :catId and code = :code',
-    ExpressionAttributeValues: {
-      ':code': pass.passCode,
-      ':catId': pass.category
+    const passWithInfo = await docClient.query({
+      TableName: 'prod-poff-product',
+      KeyConditionExpression: 'categoryId = :catId and code = :code',
+      ExpressionAttributeValues: {
+        ':code': pass.passCode,
+        ':catId': pass.category
 
-    }
-  }).promise()
+      }
+    }).promise()
+    console.log('i', passWithInfo.Items)
 
-  passesWithInfo.push(passWithInfo)
-}
+    passesWithInfo = [].concat(passesWithInfo, passWithInfo.Items)
+  }
 
-
-
-  console.log(passesWithInfo);
+  console.log(passesWithInfo)
 
   return passesWithInfo
 
