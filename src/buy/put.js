@@ -81,8 +81,9 @@ exports.handler = async (event) => {
       categoryId: item.categoryId,
       code: item.code
     },
-    UpdateExpression: 'SET reservedTime = :reservedTime, reservedTo = :reservedTo',
+    UpdateExpression: 'SET paymentMethodId = :paymentMethodId, reservedTime = :reservedTime, reservedTo = :reservedTo',
     ExpressionAttributeValues: {
+      ':paymentMethodId': body.paymentMethodId,
       ':reservedTime': (new Date()).toISOString(),
       ':reservedTo': userId
     },
@@ -128,25 +129,7 @@ exports.handler = async (event) => {
     return _h.error([400, 'No paymentMethod'])
   }
 
-  const updatedItem2 = await docClient.update({
-    TableName: 'prod-poff-product',
-    Key: {
-      categoryId: item.categoryId,
-      code: item.code
-    },
-    UpdateExpression: 'SET paymentMethodId = :paymentMethodId, transactionId = :transactionId, transactionTime = :transactionTime, transactionAmount = :transactionAmount',
-    ExpressionAttributeValues: {
-      ':paymentMethodId': body.paymentMethodId,
-      ':transactionId': mkResponse.id,
-      ':transactionTime': mkResponse.created_at,
-      ':transactionAmount': mkResponse.amount
-    },
-    ReturnValues: 'UPDATED_NEW'
-  }).promise()
 
-  if (!updatedItem2) {
-    return _h.error([500, 'Failed to save transaction'])
-  }
 
   return { url: paymentMethod.url }
 }

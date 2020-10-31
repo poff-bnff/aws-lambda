@@ -8,6 +8,7 @@ exports.handler = async (event) => {
   console.log(event)
   const body = _h.getBody(event)
   const mkResponse = JSON.parse(body.json)
+  console.log(mkResponse);
   const product = JSON.parse(mkResponse.merchant_data)
   console.log(mkResponse)
 
@@ -29,8 +30,44 @@ exports.handler = async (event) => {
   }
 
   if (mkResponse.status === 'COMPLETED') {
-
     const docClient = new aws.DynamoDB.DocumentClient()
+
+    console.log(product.categoryId);
+    const items = await docClient.query({
+      TableName: 'prod-poff-product',
+      KeyConditionExpression: 'categoryId = :categoryId and code = :code',
+      ExpressionAttributeValues: {
+        ':categoryId': product.categoryId,
+        ':code': product.code
+      }
+    }).promise()
+    console.log(product.categoryId)
+
+    if (items.Items.length === 0) {
+      return _h.error([404, 'No items'])
+    }
+
+    const item = items.Items[0]
+
+    const updatedItem2 = await docClient.update({
+      TableName: 'prod-poff-product',
+      Key: {
+        categoryId: item.categoryId,
+        code: item.code
+      },
+      UpdateExpression: 'SET transactionId = :transactionId, transactionTime = :transactionTime, transactionAmount = :transactionAmount',
+      ExpressionAttributeValues: {
+        ':transactionId': mkResponse.transaction,
+        ':transactionTime': mkResponse.message_time,
+        ':transactionAmount': mkResponse.amount
+      },
+      ReturnValues: 'UPDATED_NEW'
+    }).promise()
+
+    if (!updatedItem2) {
+      return _h.error([500, 'Failed to save transaction'])
+    }
+
 
     const newItem = await docClient.put({
       TableName: 'prod-poff-userpasses',
