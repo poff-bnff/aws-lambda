@@ -5,9 +5,14 @@ const aws = require('aws-sdk')
 const _h = require('../_helpers')
 
 exports.handler = async (event) => {
+  console.log(event)
   const body = _h.getBody(event)
   const mkResponse = JSON.parse(body.json)
   const product = JSON.parse(mkResponse.merchant_data)
+  console.log(mkResponse)
+
+  console.log(product)
+
 
   if (mkResponse.status !== 'COMPLETED') {
     return _h.error([400, 'Transaction canceled'])
@@ -23,7 +28,28 @@ exports.handler = async (event) => {
     return _h.error([400, 'Invalid shop'])
   }
 
-  return _h.redirect('http://localhost:4000/minupoff')
+  if (mkResponse.status === 'COMPLETED') {
+
+    const docClient = new aws.DynamoDB.DocumentClient()
+
+    const newItem = await docClient.put({
+      TableName: 'prod-poff-userpasses',
+      Item: {
+        cognitoSub: product.userId,
+        passCode: product.code,
+        test: 'test1'
+      }
+    }).promise()
+
+
+    if (newItem) {
+      return _h.redirect('http://localhost:4000/minupoff')
+    }
+
+  }
+
+
+
 
   // console.log(JSON.parse(body.json))
 }

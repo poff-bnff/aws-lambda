@@ -13,11 +13,20 @@ exports.handler = async (event) => {
 
   const docClient = new aws.DynamoDB.DocumentClient()
 
+  // var params = {
+  //   TableName: 'prod-poff-product',
+  //   Key: {reservedTo: userId}
+  // }
+
+  // console.log(params)
+
+  // const favourites = await docClient.get(params).promise()
+
   const favourites = await docClient.query({
     TableName: 'prod-poff-product',
-    KeyConditionExpression: 'reservedTo = :reservedTo',
+    KeyConditionExpression: 'categoryId = :rsvdTo',
     ExpressionAttributeValues: {
-      ':reservedTo': userId
+      ':rsvdTo': 'h08'
     }
   }).promise()
 
