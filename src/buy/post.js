@@ -23,8 +23,7 @@ exports.handler = async (event) => {
     return _h.error([400, 'Invalid shop'])
   }
 
-return _h.redirect(`http://localhost:4000/minupoff`)
-
+  return _h.redirect('http://localhost:4000/minupoff')
 
   // console.log(JSON.parse(body.json))
 }

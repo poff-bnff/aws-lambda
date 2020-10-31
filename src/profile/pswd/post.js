@@ -41,13 +41,10 @@ module.exports.handler = async (event) => {
       ClientId: clientId, /* required */
       ConfirmationCode: data.code, /* required */
       Password: 'S2ks2m22', /* required */
-      Username: 'bd902163-b836-4218-840c-1bd3d5e6bbd0', /* required */
+      Username: 'bd902163-b836-4218-840c-1bd3d5e6bbd0' /* required */
     }
 
-
     var response2 = await cognitoidentityserviceprovider.confirmForgotPassword(params2).promise()
-    console.log(response2);
-
-
+    console.log(response2)
   }
 }

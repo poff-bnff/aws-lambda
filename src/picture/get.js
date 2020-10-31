@@ -6,10 +6,9 @@ const s3 = new aws.S3()
 
 exports.handler = async (event) => {
   console.log(event)
-    let userId = _h.getUserId(event)
+  let userId = _h.getUserId(event)
 
   userId = userId
-
 
   var params = { Bucket: 'prod-poff-profile-pictures', Key: userId, ContentType: 'image/png' }
   console.log(params)

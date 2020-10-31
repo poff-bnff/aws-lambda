@@ -245,6 +245,19 @@ functions:
             -
                 httpApi: POST /product
 
+    product-get:
+        handler: src/product/get.handler
+        name: ${self:provider.stage}-${self:service}-product-get
+        description: Get user products
+        package:
+            include:
+                - src/product/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /product
+
     buy-get:
         handler: src/buy/get.handler
         name: ${self:provider.stage}-${self:service}-buy-get
