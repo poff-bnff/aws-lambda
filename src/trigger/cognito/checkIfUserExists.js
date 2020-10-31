@@ -19,7 +19,8 @@ exports.handler = async (event) => {
   var params = {
     UserPoolId: userPoolId, /* required */
     AttributesToGet: [
-      'email'
+      'email',
+      'email_verified'
       /* more items */
     ],
     Filter: filter1
@@ -28,6 +29,12 @@ exports.handler = async (event) => {
   const usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
   console.log('usersList:')
   console.log(usersList)
+  console.log(usersList.Users[0].Attributes)
+  console.log(usersList.Users[0].Attributes[0].Value)
+
+  if (usersList.Users[0].Attributes[0].Value === 'false'){
+    return false
+  }
 
   if (usersList.Users.length > 0) {
     return true

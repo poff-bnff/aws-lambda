@@ -10,7 +10,7 @@ module.exports.handler = async (event) => {
   var data = JSON.parse(event.body)
   console.log(data)
 
-  if (data.username) {
+  if (data.userName) {
     console.log(data.userName)
 
     var lambdaParams = {
