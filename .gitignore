@@ -2,3 +2,4 @@
 jspm_packages
 layers
 node_modules
+.DS_Store
