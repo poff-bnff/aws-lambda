@@ -8,7 +8,7 @@ var lambda = new aws.Lambda()
 exports.handler = async (event) => {
   console.log(event)
 
-  if (event.triggerSource === 'PreSignUp_AdminCreateUser'){
+  if (event.triggerSource === 'PreSignUp_AdminCreateUser' || event.triggerSource === 'PreSignUp_SignUp'){
     return event
   }
 
