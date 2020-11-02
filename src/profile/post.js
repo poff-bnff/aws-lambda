@@ -24,13 +24,6 @@ exports.handler = async (event) => {
       userAttributes.pop(i)
     }
 
-    if (i.Name === 'phone_number') {
-      console.log('phone_number ' + i.Value)
-      if (i.Value[0] !== '+') {
-        i.Value = '+' + i.Value
-        console.log(i.Value)
-      }
-    }
   }
 
   var params = {
