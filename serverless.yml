@@ -232,6 +232,19 @@ functions:
             -
                 httpApi: GET /picture
 
+    profile-picture-get:
+        handler: src/profile/picture/get.handler
+        name: ${self:provider.stage}-${self:service}-profile-picture-get
+        description: Returns current user's profile picture signed url
+        package:
+            include:
+                - src/profile/picture/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /profile/picture
+
     product-post:
         handler: src/product/post.handler
         name: ${self:provider.stage}-${self:service}-product-post
