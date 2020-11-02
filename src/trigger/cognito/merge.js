@@ -63,8 +63,8 @@ exports.handler = async (event) => {
       },
       SourceUser: { /* required */
         ProviderAttributeName: 'Cognito_Subject',
-        ProviderAttributeValue: '5191818327510275',
-        ProviderName: 'Facebook'
+        ProviderAttributeValue: sourceUserUserName[1],
+        ProviderName: sourceUserProviderName
       },
       UserPoolId: userPoolId /* required */
     }
