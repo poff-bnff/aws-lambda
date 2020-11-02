@@ -2,36 +2,83 @@
 
 const _h = require('../../_helpers')
 var aws = require('aws-sdk')
+var lambda = new aws.Lambda()
+
 
 exports.handler = async (event) => {
+  console.log(event)
+
+  if (event.triggerSource === 'PreSignUp_AdminCreateUser'){
+    return event
+  }
+
+  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
+
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   let destinationUserUserName
 
-  console.log(event)
+
   const sourceUserUserName = event.userName.split('_')
   const sourceUserProviderName = (sourceUserUserName[0][0].toUpperCase()) + sourceUserUserName[0].slice(1)
-  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
 
-  var start = 'email = \"'
-  var newUserEmail = event.request.userAttributes.email
-  var end = '\"'
-  var filter1 = start.concat(newUserEmail, end)
-  // console.log(filter1)
 
-  var params = {
-    UserPoolId: userPoolId, /* required */
-    AttributesToGet: [
-      'email'
-      /* more items */
-    ],
-    Filter: filter1
+  let searchForUser = {
+    userName: event.request.userAttributes.email,
+    source: 'preSignUpMergeTrigger'
+  }
+  var lambdaParams = {
+    FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
+    Payload: JSON.stringify(searchForUser)
   }
 
-  let usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
-  console.log('usersList:')
-  console.log(usersList)
+  console.log(lambdaParams)
 
-  if (usersList.Users.length !== 0) {
+  const checkIfUserExistsResponse = await lambda.invoke(lambdaParams).promise()
+  console.log(checkIfUserExistsResponse)
+
+  if (checkIfUserExistsResponse.Payload === 'null') {
+
+    let postUser = {
+      userName: event.request.userAttributes.email,
+      source: 'preSignUpMergeTrigger'}
+
+    lambdaParams = {
+      FunctionName: 'prod-poff-api-profile-post',
+      Payload: JSON.stringify(postUser)
+    }
+
+    const postUserResponse = await lambda.invoke(lambdaParams).promise()
+    console.log(postUserResponse)
+
+    let baseDestinationUser = JSON.parse(postUserResponse.Payload)
+    console.log(baseDestinationUser);
+
+
+    var params2 = {
+      DestinationUser: { /* required */
+        ProviderAttributeValue: baseDestinationUser.User.Username,
+        ProviderName: 'Cognito'
+        // ProviderAttributeValue: destinationUserProviderName
+        // ProviderName: 'Cognito'
+      },
+      SourceUser: { /* required */
+        ProviderAttributeName: 'Cognito_Subject',
+        ProviderAttributeValue: '5191818327510275',
+        ProviderName: 'Facebook'
+      },
+      UserPoolId: userPoolId /* required */
+    }
+
+    console.log('params2: ', params2)
+
+    const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
+    console.log(response)
+
+    return event
+  }
+  else {
+    let usersList = JSON.parse(checkIfUserExistsResponse.Payload)
+    console.log('usersList ', usersList);
     console.log('merge user')
 
     destinationUserUserName = usersList.Users[0].Username.split('_')
@@ -73,8 +120,6 @@ exports.handler = async (event) => {
 
     const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
     console.log(response)
-    return event
-  } else {
     return event
   }
 }
