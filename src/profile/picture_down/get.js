@@ -37,10 +37,8 @@ exports.handler = async (event) => {
 
   let userId = _h.getUserId(event)
 
-  let url = await getSignedUrl('getObject', {
-    Key: userId
-  })
+  let url = await getSignedUrl('getObject', {Key: userId})
 
-  return url
+  return { url: url }
 
 }
