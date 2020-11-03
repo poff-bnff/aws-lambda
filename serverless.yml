@@ -219,31 +219,31 @@ functions:
             -
                 httpApi: DELETE /favourite/{movieId}
 
-    picture-get:
-        handler: src/picture/get.handler
-        name: ${self:provider.stage}-${self:service}-picture-get
-        description: Returns current user's picture link S3
+    profile-picture_up-get:
+        handler: src/profile/picture_up/picture/get.handler
+        name: ${self:provider.stage}-${self:service}-profile-picture_up-get
+        description: Returns S3 link to send users profile pic
         package:
             include:
-                - src/picture/get.js
+                - src/profile/picture_up/get.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: GET /picture
+                httpApi: GET /profile/picture_up
 
-    profile-picture-get:
-        handler: src/profile/picture/get.handler
-        name: ${self:provider.stage}-${self:service}-profile-picture-get
+    profile-picture_down-get:
+        handler: src/profile/picture_down/get.handler
+        name: ${self:provider.stage}-${self:service}-profile-picture_down-get
         description: Returns current user's profile picture signed url
         package:
             include:
-                - src/profile/picture/get.js
+                - src/profile/picture_down/get.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: GET /profile/picture
+                httpApi: GET /profile/picture_down
 
     product-post:
         handler: src/product/post.handler

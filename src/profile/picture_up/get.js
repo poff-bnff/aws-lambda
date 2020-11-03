@@ -1,6 +1,6 @@
 'use strict'
 const aws = require('aws-sdk')
-const _h = require('../_helpers')
+const _h = require('../../_helpers')
 
 const s3 = new aws.S3()
 

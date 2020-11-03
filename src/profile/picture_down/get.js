@@ -41,4 +41,6 @@ exports.handler = async (event) => {
     Key: userId
   })
 
+  return url
+
 }
