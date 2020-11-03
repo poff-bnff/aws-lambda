@@ -51,6 +51,9 @@ exports.getUserId = (event) => {
 
   if (!token) { return }
 
+  console.log(jwt.decode(token))
+
+
   return jwt.decode(token).sub
 }
 
@@ -107,3 +110,5 @@ exports.redirect = (url) => {
     body: null
   }
 }
+
+
