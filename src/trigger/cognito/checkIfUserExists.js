@@ -11,7 +11,8 @@ exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
 
 
-  var email = event.userName
+  console.log(event.loginUsername);
+  var email = event.loginUsername
   var start = 'email = \"'
   var newUserEmail = email
   var end = '\"'
@@ -50,7 +51,15 @@ exports.handler = async (event) => {
   if (usersList.Users.length > 0) {
     console.log(3)
 
-    return true
+    for (let user of usersList.Users){
+      if (user.UserStatus === 'CONFIRMED'){
+        let sub = {sub: user.Username}
+        return sub
+
+      }
+    }
+
+
   } else {
     console.log(4)
     return false

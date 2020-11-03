@@ -10,7 +10,10 @@ exports.handler = async (event) => {
 
   userId = userId
 
-  var params = { Bucket: 'prod-poff-profile-pictures', Key: userId, ContentType: 'image/png' }
+  var params = { Bucket: 'prod-poff-profile-pictures', Key: userId }
+  if (!params.Expires) {
+    params.Expires = 60
+  }
   console.log(params)
   var url = s3.getSignedUrl('putObject', params)
 

@@ -5,43 +5,64 @@ var lambda = new AWS.Lambda()
 var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
 
 module.exports.handler = async (event) => {
+  const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
+
   console.log(event)
   var data = JSON.parse(event.body)
   console.log(data)
 
-  if (data.userName) {
-    console.log(data.userName)
 
-    var lambdaParams = {
-      FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
-      Payload: event.body
+
+  var lambdaParams = {
+    FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
+    Payload: event.body
+  }
+
+  console.log(lambdaParams)
+
+  const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+  console.log(lambdaResponse)
+
+  let sub = JSON.parse(lambdaResponse.Payload)
+  console.log(sub)
+
+  if (sub.sub & !data.code) {
+    console.log('password will be sent')
+
+    var params1 = {
+      UserAttributes: [{
+        Name: 'email_verified',
+        Value: 'true'
+      }],
+      UserPoolId: userPoolId,
+      Username: sub.sub
     }
 
-    const lambdaResponse = await lambda.invoke(lambdaParams).promise()
-    console.log(lambdaResponse)
+    var response = await cognitoidentityserviceprovider.adminUpdateUserAttributes(params1).promise()
+    console.log(response)
 
-    if (lambdaResponse.Payload === 'true') {
-      console.log('password will be sent')
 
-      var params = {
-        ClientId: clientId, /* required */
-        Username: data.userName /* required */
-      }
-
-      var response = await cognitoidentityserviceprovider.forgotPassword(params).promise()
-      console.log(response)
+    var params = {
+      ClientId: clientId, /* required */
+      Username: data.loginUsername /* required */
     }
+
+    var response = await cognitoidentityserviceprovider.forgotPassword(params).promise()
+    console.log(response)
+
 
     return { todo: true }
-  } else if (data.code) {
+  }
+
+  if (data.code) {
     console.log(data.code)
 
     var params2 = {
       ClientId: clientId, /* required */
       ConfirmationCode: data.code, /* required */
-      Password: 'S2ks2m22', /* required */
-      Username: 'bd902163-b836-4218-840c-1bd3d5e6bbd0' /* required */
+      Password: data.newPswd, /* required */
+      Username: sub.sub /* required */
     }
 
     var response2 = await cognitoidentityserviceprovider.confirmForgotPassword(params2).promise()

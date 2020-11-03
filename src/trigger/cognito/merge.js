@@ -23,7 +23,7 @@ exports.handler = async (event) => {
 
 
   let searchForUser = {
-    userName: event.request.userAttributes.email,
+    loginUsername: event.request.userAttributes.email,
     source: 'preSignUpMergeTrigger'
   }
   var lambdaParams = {
