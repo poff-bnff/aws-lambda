@@ -220,7 +220,7 @@ functions:
                 httpApi: DELETE /favourite/{movieId}
 
     profile-picture_up-get:
-        handler: src/profile/picture_up/picture/get.handler
+        handler: src/profile/picture_up/get.handler
         name: ${self:provider.stage}-${self:service}-profile-picture_up-get
         description: Returns S3 link to send users profile pic
         package:
