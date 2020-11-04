@@ -20,6 +20,11 @@ const getSignedUrl = async (operation, params) => {
       }
     }
     aws.config = new aws.Config()
+    aws.config.update({
+      endpoint: s3Endpoint,
+      signatureVersion: 'v4',
+      region: 'eu-central-1'
+    });
     const s3 = new aws.S3(conf)
     s3.getSignedUrl(operation, params, (err, url) => {
       if (err) {
