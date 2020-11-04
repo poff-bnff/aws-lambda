@@ -12,6 +12,11 @@ module.exports.handler = async (event) => {
   const validateTokenResult = await _h.validateToken(token)
   console.log('validateresult ', validateTokenResult)
 
+  if (!validateTokenResult){
+  return {status: 'token expired'}
+  }
+
+
 
 
   const params = {
@@ -28,9 +33,6 @@ module.exports.handler = async (event) => {
 
   for (const item of userDetails.UserAttributes) {
     userProfile[item.Name] = item.Value
-  }
-  if ((userProfile.name.slice((userProfile.name.lastIndexOf(' ')) + 1).localeCompare(userProfile.family_name)) === 0) {
-    userProfile.name = userProfile.name.slice(0, userProfile.name.lastIndexOf(' '))
   }
 
 
