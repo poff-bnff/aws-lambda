@@ -2,32 +2,39 @@
 
 const _h = require('../_helpers')
 var aws = require('aws-sdk')
+var lambda = new aws.Lambda()
 
 exports.handler = async (event) => {
   console.log(event)
+
+  const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
 
-  var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
+  let email
+  for (let val of JSON.parse(event.body)) {
+    if (val.Name === "email") {
+      email = val.Value
+    }
+  }
 
-  if (event.source === 'preSignUpMergeTrigger') {
-    console.log('test');
+  if (event.routeKey) {
+    if (event.routeKey === "POST /profile") {
+      console.log("Heureka", email)
 
-      var params = {
-        UserPoolId: userPoolId,
-        Username: event.userName,
-        MessageAction: 'SUPPRESS'
+      var lambdaParams = {
+        FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
+        Payload: JSON.stringify({ loginUsername: email, source: event.routeKey })
       }
+      console.log('invokeParams ', lambdaParams)
+      const lambdaResponse = await lambda.invoke(lambdaParams).promise()
 
-      console.log(params)
-      const response = await cognitoidentityserviceprovider.adminCreateUser(params).promise()
-
-    console.log(response);
-    return response
-  } else {
-
-    const userAttributes = JSON.parse(event.body)
+      if (lambdaResponse.Payload != 'null') {
+        console.log('response ', lambdaResponse)
+        return lambdaResponse
+      } else {
+        const userAttributes = JSON.parse(event.body)
     let email
     let password
 
@@ -57,5 +64,29 @@ exports.handler = async (event) => {
     const response = await cognitoidentityserviceprovider.signUp(params).promise()
 
     return response
+
+      }
+    }
   }
+
+
+
+  if (event.source === 'preSignUpMergeTrigger') {
+    console.log('test');
+
+    var params = {
+      UserPoolId: userPoolId,
+      Username: event.userName,
+      MessageAction: 'SUPPRESS'
+    }
+
+    console.log(params)
+    const response = await cognitoidentityserviceprovider.adminCreateUser(params).promise()
+
+    console.log(response);
+    return response
+  }
+
+
+
 }
