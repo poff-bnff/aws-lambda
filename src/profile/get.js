@@ -1,14 +1,25 @@
 'use strict'
 const aws = require('aws-sdk')
+const _h = require('../_helpers')
+
 
 module.exports.handler = async (event) => {
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
     region: 'eu-central-1'
   })
+
+  const token = ((event.headers.authorization).split(' '))[1]
+  const validateTokenResult = await _h.validateToken(token)
+  console.log('validateresult ', validateTokenResult)
+
+
+
   const params = {
     AccessToken: ((event.headers.authorization).split(' '))[1] /* required */
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
+
+
   console.log("prindin userDetails")
   console.log(userDetails)
   const userProfile = {
@@ -37,3 +48,6 @@ module.exports.handler = async (event) => {
 
   return userProfile
 }
+
+
+

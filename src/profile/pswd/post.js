@@ -7,6 +7,7 @@ var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
 module.exports.handler = async (event) => {
   console.log('event ', event)
 
+
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
