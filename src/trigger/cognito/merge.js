@@ -6,7 +6,7 @@ var lambda = new aws.Lambda()
 
 
 exports.handler = async (event) => {
-  console.log(event)
+  console.log('event ', event)
 
   if (event.triggerSource === 'PreSignUp_AdminCreateUser' || event.triggerSource === 'PreSignUp_SignUp'){
     return event
@@ -34,7 +34,7 @@ exports.handler = async (event) => {
   console.log(lambdaParams)
 
   const checkIfUserExistsResponse = await lambda.invoke(lambdaParams).promise()
-  console.log(checkIfUserExistsResponse)
+  console.log('checkIfUserExistsResponse ', checkIfUserExistsResponse)
 
   if (checkIfUserExistsResponse.Payload === 'null') {
 

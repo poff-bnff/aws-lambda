@@ -12,14 +12,14 @@ exports.handler = async (event) => {
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
 
-  let email
-  for (let val of JSON.parse(event.body)) {
-    if (val.Name === "email") {
-      email = val.Value
-    }
-  }
 
   if (event.routeKey) {
+    let email
+    for (let val of JSON.parse(event.body)) {
+      if (val.Name === "email") {
+        email = val.Value
+      }
+    }
     if (event.routeKey === "POST /profile") {
       console.log("Heureka", email)
 
