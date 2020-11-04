@@ -18,9 +18,6 @@ module.exports.handler = async (event) => {
   for (const item of userDetails.UserAttributes) {
     userProfile[item.Name] = item.Value
   }
-  if ((userProfile.name.slice((userProfile.name.lastIndexOf(' ')) + 1).localeCompare(userProfile.family_name)) === 0) {
-    userProfile.name = userProfile.name.slice(0, userProfile.name.lastIndexOf(' '))
-  }
 
 
   if (userProfile.phone_number){
