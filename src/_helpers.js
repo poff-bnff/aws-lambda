@@ -113,24 +113,19 @@ exports.redirect = (url) => {
 }
 
 exports.validateToken = async (event) => {
+  console.log(event);
 
-  const userPoolId = await ssmParameter('prod-poff-cognito-pool-id')
-  const url = `https://cognito-idp.eu-central-1.amazonaws.com/${userPoolId}/.well-known/jwks.json`
-  https.get(url, res => {
-  res.setEncoding("utf8");
-  let body = "";
-  res.on("data", data => {
-    body += data;
-  });
-  res.on("end", () => {
-    body = JSON.parse(body);
-    console.log(body);
-  });
-});
-  // const cognito = new aws.CognitoIdentityServiceProvider()
-  // const user = await cognito.getUser({ AccessToken: getAuthorization(event) }).promise()
+  let token = jwt.decode(event)
+console.log('token ', token);
+console.log(Date.now());
+console.log(token.exp);
 
-  // return user.UserAttributes.find(d => d.Name === 'email').Value
-  return 'hello'
+if (token.exp*1000 < Date.now()){
+console.log('expired token')
+return 'expired token'
+}
+  const keys = await ssmParameter('prod-poff-cognito-test')
+  console.log(keys);
+  return 'valid token'
 }
 

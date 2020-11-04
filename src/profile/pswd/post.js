@@ -11,9 +11,6 @@ module.exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
-  const validateTokenResult = await _h.validateToken()
-  console.log('validateresult ', validateTokenResult)
-
   var data = JSON.parse(event.body)
 
   var lambdaParams = {
