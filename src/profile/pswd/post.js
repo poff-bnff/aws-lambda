@@ -5,29 +5,26 @@ var lambda = new AWS.Lambda()
 var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
 
 module.exports.handler = async (event) => {
+  console.log('event ', event)
+
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
-  console.log(event)
   var data = JSON.parse(event.body)
-  console.log(data)
-
-
 
   var lambdaParams = {
     FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
     Payload: event.body
   }
-
-  console.log(lambdaParams)
+  console.log('invokeParams ', lambdaParams)
 
   const lambdaResponse = await lambda.invoke(lambdaParams).promise()
-  console.log(lambdaResponse)
+  console.log('response ', lambdaResponse)
 
   let sub = JSON.parse(lambdaResponse.Payload)
-  console.log(sub)
+  console.log(Boolean(!data.code))
 
-  if (sub.sub & !data.code) {
+  if (!data.code) {
     console.log('password will be sent')
 
     var params1 = {
