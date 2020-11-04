@@ -362,6 +362,19 @@ functions:
             -
                 httpApi: POST /profile/pswd
 
+    trigger-fetchFromEventival-get:
+        handler: src/trigger/fetchFromEventival/get.handler
+        name: ${self:provider.stage}-${self:service}-trigger-fetchFromEventival-get
+        description: Fetches badges from eventival
+        package:
+            include:
+                - src/trigger/fetchFromEventival
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /trigger/fetchFromEventival
+
     trigger-cognito-merge:
         handler: src/trigger/cognito/merge.handler
         name: ${self:provider.stage}-${self:service}-trigger-cognito-merge
@@ -381,6 +394,7 @@ functions:
                 - src/trigger/cognito/checkIfUserExists.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
+
 
     version:
         handler: src/version/get.handler
