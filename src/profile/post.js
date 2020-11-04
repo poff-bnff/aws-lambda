@@ -2,11 +2,38 @@
 
 const _h = require('../_helpers')
 var aws = require('aws-sdk')
+var lambda = new aws.Lambda()
 
 exports.handler = async (event) => {
   console.log(event)
+
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
+
+
+  let email
+  for(let val of JSON.parse(event.body)){
+    if(val.Name==="email"){
+      email = val.Value
+    }
+  }
+
+  if(event.routeKey){
+    if(event.routeKey === "POST /profile"){
+      console.log("Heureka", email)
+
+    var lambdaParams = {
+      FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
+      Payload: JSON.stringify({loginUsername: email, source: event.routeKey})
+    }
+    console.log('invokeParams ', lambdaParams)
+
+    const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+    console.log('response ', lambdaResponse)
+    return lambdaResponse
+
+  }
+}
 
 
   var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()

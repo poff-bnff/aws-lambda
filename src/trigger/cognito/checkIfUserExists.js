@@ -20,7 +20,8 @@ exports.handler = async (event) => {
   console.log(filter1)
 
   var params = {
-    UserPoolId: userPoolId, /* required */
+    UserPoolId: userPoolId,
+    /* required */
     AttributesToGet: [
       'email',
       // 'email_verified'
@@ -48,19 +49,34 @@ exports.handler = async (event) => {
     return usersList
   }
 
-  if (usersList.Users.length > 0) {
+  if(usersList.Users.length > 0 && event.source === "POST /profile" ){
     console.log(3)
 
+    let response = []
+
     for (let user of usersList.Users){
-      if (user.UserStatus === 'CONFIRMED'){
-        let sub = {sub: user.Username}
+      if(user.UserStatus == "EXTERNAL_PROVIDER"){
+        response.push(user.Username.split("_")[0])
+      }
+    }
+    return response
+  }
+
+  if (usersList.Users.length > 0) {
+    console.log(4)
+
+    for (let user of usersList.Users) {
+      if (user.UserStatus === 'CONFIRMED') {
+        let sub = {
+          sub: user.Username
+        }
         return sub
 
       }
     }
 
-
-  } else {
+  }
+  else {
     console.log(4)
     return false
   }
