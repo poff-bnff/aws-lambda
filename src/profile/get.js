@@ -12,6 +12,11 @@ module.exports.handler = async (event) => {
   const validateTokenResult = await _h.validateToken(token)
   console.log('validateresult ', validateTokenResult)
 
+  if (!validateTokenResult){
+  return {status: 'token expired'}
+  }
+
+
 
 
   const params = {
