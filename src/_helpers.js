@@ -4,6 +4,7 @@ const aws = require('aws-sdk')
 const jwt = require('jsonwebtoken')
 const querystring = require('querystring')
 const url = require('url')
+const https = require("https")
 
 
 const getRefererHost = (event) => {
@@ -111,4 +112,25 @@ exports.redirect = (url) => {
   }
 }
 
+exports.validateToken = async (event) => {
+
+  const userPoolId = await ssmParameter('prod-poff-cognito-pool-id')
+  const url = `https://cognito-idp.eu-central-1.amazonaws.com/${userPoolId}/.well-known/jwks.json`
+  https.get(url, res => {
+  res.setEncoding("utf8");
+  let body = "";
+  res.on("data", data => {
+    body += data;
+  });
+  res.on("end", () => {
+    body = JSON.parse(body);
+    console.log(body);
+  });
+});
+  // const cognito = new aws.CognitoIdentityServiceProvider()
+  // const user = await cognito.getUser({ AccessToken: getAuthorization(event) }).promise()
+
+  // return user.UserAttributes.find(d => d.Name === 'email').Value
+  return 'hello'
+}
 
