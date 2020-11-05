@@ -363,17 +363,17 @@ functions:
                 httpApi: POST /profile/pswd
 
     trigger-fetchFromEventival-get:
-        handler: src/trigger/fetchFromEventival/get.handler
-        name: ${self:provider.stage}-${self:service}-trigger-fetchFromEventival-get
+        handler: src/trigger/cognito/fetchFromEventival.handler
+        name: ${self:provider.stage}-${self:service}-trigger-fetchFromEventival
         description: Fetches badges from eventival
         package:
             include:
-                - src/trigger/fetchFromEventival
+                - src/trigger/cognito/fetchFromEventival
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: GET /trigger/fetchFromEventival
+                httpApi: GET /trigger/cognito/fetchFromEventival
 
     trigger-cognito-merge:
         handler: src/trigger/cognito/merge.handler
