@@ -7,11 +7,13 @@ const getSignedUrl = async (userId) => {
   const signedUrlExpireSeconds = 60 * 10
   const myBucket = 'prod-poff-profile-pictures'
   const myKey = userId
-  const accsessKeyId = await _h.ssmParameter('prod-poff-s3-key')
+  const accessKeyId = await _h.ssmParameter('prod-poff-s3-key')
   const secretAccesskey = await _h.ssmParameter('prod-poff-s3-secret')
+  console.log(accessKeyId)
+  console.log(secretAccesskey)
 
   const s3 = new aws.S3({
-    accessKeyId: accsessKeyId,
+    accessKeyId: accessKeyId,
     signatureVersion: 'v4',
     region: 'eu-central-1',
     secretAccessKey: secretAccesskey
