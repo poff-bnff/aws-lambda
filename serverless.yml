@@ -3,7 +3,7 @@ service: poff-api
 provider:
     name: aws
     runtime: nodejs12.x
-    stage: prod
+    stage: prod3
     stackName: ${self:provider.stage}-${self:service}
     apiName: ${self:provider.stage}-${self:service}
     region: eu-central-1
