@@ -43,7 +43,7 @@ exports.handler = async (event) => {
       source: 'preSignUpMergeTrigger'}
 
     lambdaParams = {
-      FunctionName: 'prod-poff-api-profile-post',
+      FunctionName: 'prod3-poff-api-profile-post',
       Payload: JSON.stringify(postUser)
     }
 
