@@ -9,8 +9,6 @@ const getSignedUrl = async (userId) => {
   const myKey = userId
   const accessKeyId = await _h.ssmParameter('prod-poff-s3-key')
   const secretAccesskey = await _h.ssmParameter('prod-poff-s3-secret')
-  console.log(accessKeyId)
-  console.log(secretAccesskey)
 
   const s3 = new aws.S3({
     accessKeyId: accessKeyId,
