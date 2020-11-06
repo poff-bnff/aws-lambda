@@ -10,6 +10,6 @@ exports.handler = async (event) => {
   const referer_host = _h.getRefererHost(event)
 
   const redirect_uri = `${domain}/oauth2/authorize?response_type=token&client_id=${clientId}&redirect_uri=${referer_host}/login/&identity_provider=Google`
-  console.log(redirect_uri)
-  return _h.redirect('redirect_uri', redirect_uri)
+  console.log('redirect_uri', redirect_uri)
+  return _h.redirect(redirect_uri)
 }
