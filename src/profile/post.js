@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       console.log("Heureka", email)
 
       var lambdaParams = {
-        FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
+        FunctionName: 'prod3-poff-api-trigger-cognito-checkIfUserExists',
         Payload: JSON.stringify({ loginUsername: email, source: event.routeKey })
       }
       console.log('invokeParams ', lambdaParams)
