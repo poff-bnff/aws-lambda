@@ -39,12 +39,22 @@ const postToMaksekeskus = async (postData) => {
 }
 
 exports.handler = async (event) => {
+  console.log('event ', event);
   const userId = _h.getUserId(event)
   const userEmail = await _h.getUserEmail(event)
   const userIp = _get(event, 'requestContext.http.sourceIp')
 
   const categoryId = event.pathParameters.categoryId
   const body = _h.getBody(event)
+
+  const return_url = event.queryStringParameters.return_url || event.headers.referer
+  console.log('return_url ', return_url)
+  const cancel_url = event.queryStringParameters.cancel_url || event.headers.referer
+  console.log('cancel_url ', cancel_url)
+
+
+
+
 
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
@@ -113,7 +123,7 @@ exports.handler = async (event) => {
       transaction_url: {
         cancel_url: { method: 'POST', url: `https://${_h.getHeader(event, 'host')}/buy` },
         notification_url: { method: 'POST', url: `https://${_h.getHeader(event, 'host')}/buy` },
-        return_url: { method: 'POST', url: `https://${_h.getHeader(event, 'host')}/buy` }
+        return_url: { method: 'POST', url: `https://${_h.getHeader(event, 'host')}/buy?return_url=${return_url}&cancel_url=${cancel_url}` }
       }
     }
   })

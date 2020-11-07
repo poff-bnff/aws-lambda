@@ -15,6 +15,16 @@ const getRefererHost = (event) => {
 }
 exports.getRefererHost = getRefererHost
 
+const getRefererLang = (event) => {
+  const referer_url = url.parse(getHeader(event, 'referer'))
+  console.log('referer_url ', referer_url)
+  const referer_path = referer_url.pathname
+  console.log('referer_path ', referer_path);
+  // const referer_host = referer_url.host
+  // return `${referer_protocol}//${referer_host}`
+}
+exports.getRefererLang = getRefererLang
+
 const getHeader = (event, headerKey) => {
   const headers = Object.fromEntries(
     Object.entries(event.headers).map(([k, v]) => [k.toLowerCase(), v])
@@ -74,7 +84,7 @@ exports.getBody = (event) => {
     body = Buffer.from(body, 'base64').toString()
   }
 
-  if (getHeader(event, 'content-type') === 'application/x-www-form-urlencoded') {
+  if (getHeader(event, 'content-type') === 'application/x-www-form-urlencoded' || getHeader(event, 'content-type') === 'application/x-www-form-urlencoded; charset=UTF-8') {
     return querystring.parse(body)
   } else {
     return JSON.parse(body)

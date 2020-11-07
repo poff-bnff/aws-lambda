@@ -5,18 +5,28 @@ const aws = require('aws-sdk')
 const _h = require('../_helpers')
 
 exports.handler = async (event) => {
-  console.log(event)
+  console.log('event ', event)
   const body = _h.getBody(event)
   const mkResponse = JSON.parse(body.json)
-  console.log(mkResponse);
+  console.log('mkResponse ', mkResponse);
   const product = JSON.parse(mkResponse.merchant_data)
-  console.log(mkResponse)
+  console.log('mkResponse ', mkResponse)
 
   console.log(product)
 
+  console.log('mkResponse ', mkResponse)
+
+
 
   if (mkResponse.status !== 'COMPLETED') {
-    return _h.error([400, 'Transaction canceled'])
+    if (event.queryStringParameters.cancel_url){
+    let cancel_url = event.queryStringParameters.cancel_url
+    return _h.redirect(cancel_url)
+    } else {
+      return _h.redirect('https://poff.ee')
+
+    }
+    // return _h.error([400, 'Transaction canceled'])
   }
 
   if (!product.userId || !product.categoryId || !product.code) {
@@ -79,8 +89,11 @@ exports.handler = async (event) => {
     }).promise()
 
 
+    let return_url = event.queryStringParameters.return_url
+
+
     if (newItem) {
-      return _h.redirect('http://localhost:4000/minupoff')
+      return _h.redirect(return_url)
     }
 
   }
