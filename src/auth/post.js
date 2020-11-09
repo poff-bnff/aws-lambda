@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   var data = JSON.parse(event.body)
   console.log('data', data)
 
-  if (data.userName) {
+  if (data.loginUsername) {
 
     var lambdaParams = {
       FunctionName: 'prod3-poff-api-trigger-cognito-checkIfUserExists',
@@ -25,8 +25,11 @@ exports.handler = async (event) => {
 
     const lambdaResponse = await lambda.invoke(lambdaParams).promise()
     console.log('lambdaResponse ', lambdaResponse)
-  }
 
+    if (lambdaResponse.Payload === 'false'){
+      return {user: false}
+    }
+  }
 
   const cognito = new aws.CognitoIdentityServiceProvider()
   var params = {
@@ -34,10 +37,11 @@ exports.handler = async (event) => {
     ClientId: clientId,
     UserPoolId: userPoolId,
     AuthParameters: {
-      USERNAME: body.userName,
+      USERNAME: body.loginUsername,
       PASSWORD: body.password
     }
   }
+  console.log('loginParams ', params)
 
   const response = await cognito.adminInitiateAuth(params).promise()
   console.log('response ', response)

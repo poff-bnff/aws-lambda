@@ -5,7 +5,7 @@ var aws = require('aws-sdk')
 var lambda = new aws.Lambda()
 
 exports.handler = async (event) => {
-  console.log(event)
+  console.log('event ', event)
 
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
@@ -30,7 +30,7 @@ exports.handler = async (event) => {
       console.log('invokeParams ', lambdaParams)
       const lambdaResponse = await lambda.invoke(lambdaParams).promise()
 
-      if (lambdaResponse.Payload != 'null') {
+      if (lambdaResponse.Payload !== 'false') {
         console.log('response ', lambdaResponse)
         return lambdaResponse
       } else {

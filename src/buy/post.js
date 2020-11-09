@@ -6,6 +6,8 @@ const _h = require('../_helpers')
 
 exports.handler = async (event) => {
   console.log('event ', event)
+
+  const docClient = new aws.DynamoDB.DocumentClient()
   const body = _h.getBody(event)
   const mkResponse = JSON.parse(body.json)
   console.log('mkResponse ', mkResponse);
@@ -19,13 +21,39 @@ exports.handler = async (event) => {
 
 
   if (mkResponse.status !== 'COMPLETED') {
-    if (event.queryStringParameters.cancel_url){
-    let cancel_url = event.queryStringParameters.cancel_url
-    return _h.redirect(cancel_url)
+    let cancel_url
+
+    const update_options = {
+      TableName: 'prod-poff-product',
+      Key: {
+        categoryId: product.categoryId,
+        code: product.code
+      },
+      UpdateExpression: 'SET paymentMethodId = :paymentMethodId, reservedTime = :reservedTime, reservedTo = :reservedTo',
+      ExpressionAttributeValues: {
+        ':paymentMethodId':'',
+        ':reservedTime': '',
+        ':reservedTo': ''
+      },
+      ReturnValues: 'UPDATED_NEW'
+    }
+
+    console.log(update_options)
+
+
+
+    const updatedItem = await docClient.update(update_options).promise()
+
+
+
+    if (event.queryStringParameters.cancel_url) {
+      cancel_url = event.queryStringParameters.cancel_url
+
     } else {
       return _h.redirect('https://poff.ee')
-
     }
+    return _h.redirect(cancel_url)
+
     // return _h.error([400, 'Transaction canceled'])
   }
 
@@ -40,7 +68,6 @@ exports.handler = async (event) => {
   }
 
   if (mkResponse.status === 'COMPLETED') {
-    const docClient = new aws.DynamoDB.DocumentClient()
 
     console.log(product.categoryId);
     const items = await docClient.query({

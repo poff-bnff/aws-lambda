@@ -34,7 +34,8 @@ exports.handler = async (event) => {
   console.log('usersList:', usersList)
 
   if (usersList.Users.length === 0) {
-    return
+    console.log(0)
+    return false
   }
   console.log(usersList.Users[0].Attributes)
   console.log(usersList.Users[0].Attributes[0].Value)
