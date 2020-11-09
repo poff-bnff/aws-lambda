@@ -20,7 +20,7 @@ exports.handler = async (event) => {
 
 
 
-  if (mkResponse.status !== 'COMPLETED') {
+  if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
 
     const update_options = {
@@ -29,12 +29,18 @@ exports.handler = async (event) => {
         categoryId: product.categoryId,
         code: product.code
       },
-      UpdateExpression: 'SET paymentMethodId = :paymentMethodId, reservedTime = :reservedTime, reservedTo = :reservedTo',
-      ExpressionAttributeValues: {
-        ':paymentMethodId':'',
-        ':reservedTime': '',
-        ':reservedTo': ''
+      AttributeUpdates: {
+        paymentMethodId: {
+          Action: 'DELETE'
+        },
+        reservedTime: {
+          Action: 'DELETE'
+        },
+        reservedTo: {
+          Action: 'DELETE'
+        }
       },
+
       ReturnValues: 'UPDATED_NEW'
     }
 

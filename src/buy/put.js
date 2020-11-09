@@ -85,6 +85,8 @@ exports.handler = async (event) => {
   }
 
   const item = items.Items[0]
+  console.log('item ', item)
+  console.log('item.price ', item.price)
 
   const update_options = {
     TableName: 'prod-poff-product',
