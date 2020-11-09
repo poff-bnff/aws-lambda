@@ -6,10 +6,12 @@ const _h = require('../_helpers')
 const getMkConfig = async () => {
   const mkId = await _h.ssmParameter('prod-poff-maksekeskus-id')
   const mkKey = await _h.ssmParameter('prod-poff-maksekeskus-secret-key')
+  const mkHost = await _h.ssmParameter('prod-poff-maksekeskus-host')
+
 
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'api-test.maksekeskus.ee',
+      hostname: mkHost,
       path: '/v1/shop/configuration',
       method: 'GET',
       headers: {

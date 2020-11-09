@@ -8,10 +8,11 @@ const _h = require('../_helpers')
 const postToMaksekeskus = async (postData) => {
   const mkId = await _h.ssmParameter('prod-poff-maksekeskus-id')
   const mkKey = await _h.ssmParameter('prod-poff-maksekeskus-secret-key')
+  const mkHost = await _h.ssmParameter('prod-poff-maksekeskus-host')
 
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'api-test.maksekeskus.ee',
+      hostname: mkHost,
       path: '/v1/transactions',
       method: 'POST',
       headers: {
