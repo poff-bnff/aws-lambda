@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     console.log('lambdaResponse ', lambdaResponse)
 
     if (lambdaResponse.Payload === 'false'){
-      return {email: data.loginUsername, user: false}
+      return {noUserEmail: data.loginUsername, user: false}
     }
 
     if (lambdaResponse.Payload){
