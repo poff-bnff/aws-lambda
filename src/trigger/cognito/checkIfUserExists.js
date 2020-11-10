@@ -67,6 +67,25 @@ exports.handler = async (event) => {
     console.log(4)
 
     for (let user of usersList.Users) {
+      console.log(44)
+      if (user.UserStatus === 'UNCONFIRMED') {
+        console.log(444)
+        let unConfirmedUser = {
+          email: event.loginUsername,
+          sub: user.Username,
+          userStatus: user.UserStatus
+        }
+        return unConfirmedUser
+
+      }
+    }
+
+  }
+
+  if (usersList.Users.length > 0) {
+    console.log(5)
+
+    for (let user of usersList.Users) {
       if (user.UserStatus === 'CONFIRMED') {
         let sub = {
           sub: user.Username
@@ -77,8 +96,10 @@ exports.handler = async (event) => {
     }
 
   }
+
+
   else {
-    console.log(4)
+    console.log(6)
     return false
   }
 }

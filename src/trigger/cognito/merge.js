@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     source: 'preSignUpMergeTrigger'
   }
   var lambdaParams = {
-    FunctionName: 'prod-poff-api-trigger-cognito-checkIfUserExists',
+    FunctionName: 'prod3-poff-api-trigger-cognito-checkIfUserExists',
     Payload: JSON.stringify(searchForUser)
   }
 
@@ -36,7 +36,7 @@ exports.handler = async (event) => {
   const checkIfUserExistsResponse = await lambda.invoke(lambdaParams).promise()
   console.log('checkIfUserExistsResponse ', checkIfUserExistsResponse)
 
-  if (checkIfUserExistsResponse.Payload === 'null') {
+  if (checkIfUserExistsResponse.Payload === 'false') {
 
     let postUser = {
       userName: event.request.userAttributes.email,

@@ -27,8 +27,17 @@ exports.handler = async (event) => {
     console.log('lambdaResponse ', lambdaResponse)
 
     if (lambdaResponse.Payload === 'false'){
-      return {user: false}
+      return {email: data.loginUsername, user: false}
     }
+
+    if (lambdaResponse.Payload){
+      let payload = JSON.parse(lambdaResponse.Payload)
+      if (payload.userStatus === 'UNCONFIRMED'){
+        return {email: payload.email, confirmed: false}
+      }
+    }
+
+
   }
 
   const cognito = new aws.CognitoIdentityServiceProvider()
