@@ -3,6 +3,7 @@
 const _get = require('lodash/get')
 const aws = require('aws-sdk')
 const _h = require('../_helpers')
+const lambda = new aws.Lambda()
 
 exports.handler = async (event) => {
   console.log('event ', event)
@@ -22,6 +23,24 @@ exports.handler = async (event) => {
 
   if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
+
+  //EMAIL
+    try {
+      let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
+
+      var lambdaParams = {
+        FunctionName: 'prod3-poff-api-trigger-sendEmail',
+        Payload: merchantData
+      }
+      console.log('invokeParams ', lambdaParams)
+
+      const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+      console.log('response ', lambdaResponse)
+
+    } catch (error) {
+      console.log(error)
+    }
+  ////////////////
 
     const update_options = {
       TableName: 'prod-poff-product',
@@ -121,8 +140,13 @@ exports.handler = async (event) => {
       }
     }).promise()
 
+    let return_url
 
-    let return_url = event.queryStringParameters.return_url
+    if(event.queryStringParameters.return_url){
+      return_url = event.queryStringParameters.return_url
+    }else{
+      return_url = 'https://poff.ee/minupoff'
+    }
 
 
     if (newItem) {

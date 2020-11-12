@@ -395,6 +395,19 @@ functions:
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
+    trigger-sendEmail-post:
+        handler: src/trigger/sendEmail.handler
+        name: ${self:provider.stage}-${self:service}-trigger-sendEmail
+        description: Sends user an email about the pass they have just bought.
+        package:
+            include:
+                - src/trigger/sendEmail.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /trigger/sendEmail
+
 
     version:
         handler: src/version/get.handler
