@@ -144,8 +144,17 @@ exports.handler = async (event) => {
 
  const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
  console.log(emailRes);
-//Siia peaks tapferm@gmail.com-i asemele panema selle , kellel on passiostu infot vaja
  const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
  console.log(email2Res);
+
+//LIVE-i minekuks kommenteeri see sisse
+
+// //kliendi kiri
+//  const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, userDetails.email, "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+//  console.log(emailRes);
+
+// //passiostu info passi printijatele email puudu
+//  const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "????", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+//  console.log(email2Res);
 
 }
