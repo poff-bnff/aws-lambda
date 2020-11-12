@@ -16,10 +16,13 @@ module.exports.handler = async (event) => {
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
 
-//  try{
+
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-favourite-get',
-    Payload: JSON.stringify({headers : { authorization: ((event.headers.authorization).split(' '))[1] }})
+    Payload: JSON.stringify({
+      table: 'prod-poff-favourite',
+      headers: { authorization: ((event.headers.authorization).split(' '))[1] }
+     })
   }
   console.log('invokeParams ', lambdaParams)
 
@@ -27,12 +30,29 @@ module.exports.handler = async (event) => {
   console.log('lambdaResponse ', lambdaResponse)
 
   const shortlist = JSON.parse(lambdaResponse.Payload).map(id => {
-    return {cassette_id: id}
+    return { cassette_id: id }
   })
   console.log('shortlist ', shortlist)
 
-// }
-// catch(err){null}
+
+  try { var lambdaParams2 = {
+    FunctionName: 'prod3-poff-api-favourite-get',
+    Payload: JSON.stringify({
+      table: 'prod-poff-savedscreenings',
+      headers: { authorization: ((event.headers.authorization).split(' '))[1] }
+     })
+  }
+  console.log('invokeParams ', lambdaParams2)
+
+  const lambdaResponse2 = await lambda.invoke(lambdaParams2).promise()
+  console.log('lambdaResponse ', lambdaResponse2)
+
+  const savedscreenings = JSON.parse(lambdaResponse2.Payload)
+
+  console.log('savedscreenings ', savedscreenings)}
+
+  catch(err){null}
+
 
   console.log('prindin userDetails')
   console.log(userDetails)
@@ -52,7 +72,7 @@ module.exports.handler = async (event) => {
   // profiil täidetud
   if ('birthdate' in userProfile && 'email' in userProfile && 'address' in userProfile && 'family_name' in userProfile && 'name' in userProfile && 'gender' in userProfile && 'phone_number' in userProfile) {
     userProfile.profile_filled = true
-  // registreerinud aga profiil täitmata
+    // registreerinud aga profiil täitmata
   } else if ('email' in userProfile && 'family_name' in userProfile && 'name' in userProfile) {
     userProfile.profile_filled = false
   }
