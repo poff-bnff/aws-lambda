@@ -19,28 +19,8 @@ exports.handler = async (event) => {
 
   console.log('mkResponse ', mkResponse)
 
-
-
   if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
-
-  //EMAIL
-    try {
-      let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
-
-      var lambdaParams = {
-        FunctionName: 'prod3-poff-api-trigger-sendEmail',
-        Payload: merchantData
-      }
-      console.log('invokeParams ', lambdaParams)
-
-      const lambdaResponse = await lambda.invoke(lambdaParams).promise()
-      console.log('response ', lambdaResponse)
-
-    } catch (error) {
-      console.log(error)
-    }
-  ////////////////
 
     const update_options = {
       TableName: 'prod-poff-product',
@@ -65,11 +45,7 @@ exports.handler = async (event) => {
 
     console.log(update_options)
 
-
-
     const updatedItem = await docClient.update(update_options).promise()
-
-
 
     if (event.queryStringParameters.cancel_url) {
       cancel_url = event.queryStringParameters.cancel_url
@@ -153,10 +129,23 @@ exports.handler = async (event) => {
       return _h.redirect(return_url)
     }
 
+    //EMAIL
+      try {
+        let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
+
+        var lambdaParams = {
+          FunctionName: 'prod3-poff-api-trigger-sendEmail',
+          Payload: merchantData
+        }
+        console.log('invokeParams ', lambdaParams)
+
+        const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+        console.log('response ', lambdaResponse)
+
+      } catch (error) {
+        console.log(error)
+      }
+
   }
 
-
-
-
-  // console.log(JSON.parse(body.json))
 }

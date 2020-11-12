@@ -8,7 +8,7 @@ const https = require('https');
 
 
 
-const SendTemplateEmailFromMailChimp = async (mandrillApiKey, templateUsed, email, firstname, lastname, passtype, passcode, passname) => {
+const SendTemplateEmailFromMailChimp = async (mandrillApiKey, sendTo, templateUsed, email, firstname, lastname, passtype, passcode, passname) => {
 
   return new Promise((resolve, reject)=>{
     let postData = JSON.stringify({
@@ -23,7 +23,7 @@ const SendTemplateEmailFromMailChimp = async (mandrillApiKey, templateUsed, emai
             from_name: "",
             to: [
                 {
-                    email: "tapferm@gmail.com",
+                    email: sendTo,
                     type: "to",
                 },
             ],
@@ -121,22 +121,31 @@ exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   var start = 'sub = \"'
   var end = '\"'
-  var filter1 = start.concat(userSub, end)
+  var filter = start.concat(userSub, end)
+  console.log(filter)
 
   var params = {
     UserPoolId: userPoolId,
-    AttributesToGet: [
-      'email',
-    ],
-    Filter: filter1
+    AttributesToGet: ['email','name', 'family_name', 'address'],
+    Filter: filter,
+    Limit: 10
   }
+
+  let passNames = {h08:"Hundipass 8", h16:"Hundipass 16", h36:"Hundipass 36", h00:"Toetaja Hundipass", jp1:"Just Filmi Pass"}
 
   const usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
   console.log('usersList:', usersList)
-  let attributes = usersList.Attributes
+  let attributes = usersList.Users[0].Attributes
   console.log(attributes)
+  let userDetails ={}
+  for(let item of attributes){
+      userDetails[item.Name] = item.Value
+  }
 
-//  const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, "PassiOst", "tapferm@gmail.com", "Mariann",  "Tapfer", passType, passCode, "Just Filmi Pass")
-//  console.log(emailRes);
+ const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+ console.log(emailRes);
+//Siia peaks tapferm@gmail.com-i asemele panema selle , kellel on passiostu infot vaja
+ const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+ console.log(email2Res);
 
 }
