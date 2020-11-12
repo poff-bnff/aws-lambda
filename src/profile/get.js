@@ -35,7 +35,8 @@ module.exports.handler = async (event) => {
   console.log('shortlist ', shortlist)
 
 
-  try { var lambdaParams2 = {
+  // try {
+    var lambdaParams2 = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
       table: 'prod-poff-savedscreenings',
@@ -49,16 +50,17 @@ module.exports.handler = async (event) => {
 
   const savedscreenings = JSON.parse(lambdaResponse2.Payload)
 
-  console.log('savedscreenings ', savedscreenings)}
+  console.log('savedscreenings ', savedscreenings)
 
-  catch(err){null}
+// } catch(err){null}
 
 
   console.log('prindin userDetails')
   console.log(userDetails)
   const userProfile = {
     username: userDetails.Username,
-    shortlist: shortlist
+    shortlist: shortlist,
+    savedscreenings: savedscreenings
   }
 
   for (const item of userDetails.UserAttributes) {
