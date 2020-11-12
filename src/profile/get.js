@@ -1,9 +1,11 @@
 'use strict'
 const aws = require('aws-sdk')
 const _h = require('../_helpers')
+const lambda = new aws.Lambda()
 
 
 module.exports.handler = async (event) => {
+  console.log('event ', event)
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
     region: 'eu-central-1'
   })
@@ -14,20 +16,37 @@ module.exports.handler = async (event) => {
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
 
+//  try{
+  var lambdaParams = {
+    FunctionName: 'prod3-poff-api-favourite-get',
+    Payload: JSON.stringify({headers : { authorization: ((event.headers.authorization).split(' '))[1] }})
+  }
+  console.log('invokeParams ', lambdaParams)
 
-  console.log("prindin userDetails")
+  const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+  console.log('lambdaResponse ', lambdaResponse)
+
+  const shortlist = JSON.parse(lambdaResponse.Payload).map(id => {
+    return {cassette_id: id}
+  })
+  console.log('shortlist ', shortlist)
+
+// }
+// catch(err){null}
+
+  console.log('prindin userDetails')
   console.log(userDetails)
   const userProfile = {
-    username: userDetails.Username
+    username: userDetails.Username,
+    shortlist: shortlist
   }
 
   for (const item of userDetails.UserAttributes) {
     userProfile[item.Name] = item.Value
   }
 
-
-  if (userProfile.phone_number){
-    userProfile.phone_number = userProfile.phone_number.replace("+", "")
+  if (userProfile.phone_number) {
+    userProfile.phone_number = userProfile.phone_number.replace('+', '')
   }
 
   // profiil täidetud
@@ -38,11 +57,8 @@ module.exports.handler = async (event) => {
     userProfile.profile_filled = false
   }
 
-  console.log("frondi versioon profiilist")
+  console.log('frondi versioon profiilist')
   console.log(userProfile)
 
   return userProfile
 }
-
-
-

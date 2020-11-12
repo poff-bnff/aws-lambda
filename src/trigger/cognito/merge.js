@@ -4,11 +4,10 @@ const _h = require('../../_helpers')
 var aws = require('aws-sdk')
 var lambda = new aws.Lambda()
 
-
 exports.handler = async (event) => {
   console.log('event ', event)
 
-  if (event.triggerSource === 'PreSignUp_AdminCreateUser' || event.triggerSource === 'PreSignUp_SignUp'){
+  if (event.triggerSource === 'PreSignUp_AdminCreateUser' || event.triggerSource === 'PreSignUp_SignUp') {
     return event
   }
 
@@ -17,12 +16,10 @@ exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   let destinationUserUserName
 
-
   const sourceUserUserName = event.userName.split('_')
   const sourceUserProviderName = (sourceUserUserName[0][0].toUpperCase()) + sourceUserUserName[0].slice(1)
 
-
-  let searchForUser = {
+  const searchForUser = {
     loginUsername: event.request.userAttributes.email,
     source: 'preSignUpMergeTrigger'
   }
@@ -31,28 +28,29 @@ exports.handler = async (event) => {
     Payload: JSON.stringify(searchForUser)
   }
 
-  console.log(lambdaParams)
+  console.log('lambdaParams ', lambdaParams)
 
   const checkIfUserExistsResponse = await lambda.invoke(lambdaParams).promise()
   console.log('checkIfUserExistsResponse ', checkIfUserExistsResponse)
 
   if (checkIfUserExistsResponse.Payload === 'false') {
-
-    let postUser = {
+    const postUser = {
       userName: event.request.userAttributes.email,
-      source: 'preSignUpMergeTrigger'}
+      source: 'preSignUpMergeTrigger'
+    }
 
     lambdaParams = {
       FunctionName: 'prod3-poff-api-profile-post',
       Payload: JSON.stringify(postUser)
     }
 
+    console.log('lambdaParams ', lambdaParams)
+
     const postUserResponse = await lambda.invoke(lambdaParams).promise()
-    console.log(postUserResponse)
+    console.log('postUserResponse ', postUserResponse)
 
-    let baseDestinationUser = JSON.parse(postUserResponse.Payload)
-    console.log(baseDestinationUser);
-
+    const baseDestinationUser = JSON.parse(postUserResponse.Payload)
+    console.log(baseDestinationUser)
 
     var params2 = {
       DestinationUser: { /* required */
@@ -72,13 +70,12 @@ exports.handler = async (event) => {
     console.log('params2: ', params2)
 
     const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
-    console.log(response)
+    console.log('response ', response)
 
     return event
-  }
-  else {
+  } else {
     let usersList = JSON.parse(checkIfUserExistsResponse.Payload)
-    console.log('usersList ', usersList);
+    console.log('usersList ', usersList)
     console.log('merge user')
 
     destinationUserUserName = usersList.Users[0].Username.split('_')
@@ -101,7 +98,7 @@ exports.handler = async (event) => {
       destinationUserUserName = destinationUserUserName.toString()
     }
 
-    var params2 = {
+    var params3 = {
       DestinationUser: { /* required */
         ProviderAttributeValue: destinationUserUserName,
         ProviderName: destinationUserProviderName
@@ -116,10 +113,10 @@ exports.handler = async (event) => {
       UserPoolId: userPoolId /* required */
     }
 
-    console.log('params2: ', params2)
+    console.log('params2: ', params3)
 
-    const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params2).promise()
-    console.log(response)
+    const response = await cognitoidentityserviceprovider.adminLinkProviderForUser(params3).promise()
+    console.log('response ', response)
     return event
   }
 }

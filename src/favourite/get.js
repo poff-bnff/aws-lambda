@@ -4,7 +4,9 @@ const aws = require('aws-sdk')
 const _h = require('../_helpers')
 
 exports.handler = async (event) => {
+  console.log('event ', event)
   const userId = _h.getUserId(event)
+  console.log('userId ', userId)
 
   if (!userId) {
     return _h.error([401, 'Unauthorized'])

@@ -16,11 +16,11 @@ const postToTokenEndpoint = async (postData) => {
       headers: {
         Authorization: 'Basic ' + Buffer.from(`${mkId}:${mkKey}`).toString('base64'),
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': 'XSRF-TOKEN=1645d446-e706-4e80-bcec-ebf8dba5e7a3'
+        Cookie: 'XSRF-TOKEN=1645d446-e706-4e80-bcec-ebf8dba5e7a3'
       }
     }
 
-    console.log(options);
+    console.log(options)
 
     const request = https.request(options, response => {
       var body = ''
@@ -35,23 +35,20 @@ const postToTokenEndpoint = async (postData) => {
     })
 
     request.on('error', reject)
-    console.log(JSON.stringify(postData));
+    console.log(JSON.stringify(postData))
     request.write(JSON.stringify(postData))
     request.end()
   })
 }
 
 exports.handler = async (event) => {
-
   const mkResponse = await postToTokenEndpoint({
     grant_type: 'authorization_code',
     redirect_uri: 'http://localhost:4000/login/',
     code: 'b7d4f674-6573-486b-85e9-eyteytety'
   })
 
-  console.log(mkResponse);
-
-
+  console.log(mkResponse)
 
   return { url: 'url' }
 }
