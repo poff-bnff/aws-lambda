@@ -8,19 +8,37 @@ exports.handler = async (event) => {
   const userId = _h.getUserId(event)
   console.log('userId ', userId)
 
+  const docClient = new aws.DynamoDB.DocumentClient()
+
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
   }
 
-  const docClient = new aws.DynamoDB.DocumentClient()
+  if (event.table === 'prod-poff-savedscreenings') {
+    console.log('get prod-poff-savedscreenings')
 
-  const favourites = await docClient.query({
-    TableName: 'prod-poff-favourite',
-    KeyConditionExpression: 'userId = :userId',
-    ExpressionAttributeValues: {
-      ':userId': userId
-    }
-  }).promise()
+    const savedscreenings = await docClient.query({
+      TableName: 'prod-poff-savedscreenings',
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      }
+    }).promise()
 
-  return favourites.Items.map(i => [i.movieId]).flat()
+    console.log(savedscreenings)
+
+    return savedscreenings
+  } else {
+
+
+    const favourites = await docClient.query({
+      TableName: 'prod-poff-favourite',
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      }
+    }).promise()
+
+    return favourites.Items.map(i => [i.movieId]).flat()
+  }
 }
