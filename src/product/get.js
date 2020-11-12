@@ -21,30 +21,35 @@ exports.handler = async (event) => {
     }
   }).promise()
 
-  console.log(passes)
+  console.log('passes ', passes)
 
-  console.log(passes.Items[0].passCode);
-  console.log(passes.Items[0].category);
+  console.log('passcode ', passes.Items[0].passCode);
+  console.log('category ', passes.Items[0].category);
 
   let passesWithInfo = []
 
-  for (let pass of passes.Items) {
+  if (passes.Items.length > 0) {
 
-    const passWithInfo = await docClient.query({
-      TableName: 'prod-poff-product',
-      KeyConditionExpression: 'categoryId = :catId and code = :code',
-      ExpressionAttributeValues: {
-        ':code': pass.passCode,
-        ':catId': pass.category
 
-      }
-    }).promise()
-    console.log('i', passWithInfo.Items)
 
-    passesWithInfo = [].concat(passesWithInfo, passWithInfo.Items)
+    for (let pass of passes.Items) {
+
+      const passWithInfo = await docClient.query({
+        TableName: 'prod-poff-product',
+        KeyConditionExpression: 'categoryId = :catId and code = :code',
+        ExpressionAttributeValues: {
+          ':code': pass.passCode,
+          ':catId': pass.category
+
+        }
+      }).promise()
+      console.log('i', passWithInfo.Items)
+
+      passesWithInfo = [].concat(passesWithInfo, passWithInfo.Items)
+    }
+
+    console.log(passesWithInfo)
   }
-
-  console.log(passesWithInfo)
 
   return passesWithInfo
 

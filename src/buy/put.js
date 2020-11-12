@@ -123,6 +123,7 @@ exports.handler = async (event) => {
         categoryId: item.categoryId,
         code: item.code
       }),
+      reference: item.categoryId,
       transaction_url: {
         cancel_url: { method: 'POST', url: `https://${_h.getHeader(event, 'host')}/buy?cancel_url=${cancel_url}` },
         notification_url: { method: 'POST', url: `https://${_h.getHeader(event, 'host')}/buy` },

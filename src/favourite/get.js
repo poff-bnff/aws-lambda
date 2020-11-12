@@ -25,9 +25,10 @@ exports.handler = async (event) => {
       }
     }).promise()
 
-    console.log(savedscreenings)
+    console.log('savedscreenings ', savedscreenings)
+    // console.log(savedscreenings.Items.map(i => [i]).flat())
 
-    return savedscreenings
+    return savedscreenings.Items.map(i => [i]).flat()
   } else {
 
 
@@ -38,6 +39,9 @@ exports.handler = async (event) => {
         ':userId': userId
       }
     }).promise()
+
+    console.log(favourites)
+    console.log(favourites.Items.map(i => [i.movieId]).flat())
 
     return favourites.Items.map(i => [i.movieId]).flat()
   }
