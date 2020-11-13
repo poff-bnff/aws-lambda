@@ -37,34 +37,35 @@ exports.handler = async (event) => {
   if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
 
-    if (!item.transactionTime){
-    const update_options = {
-      TableName: 'prod-poff-product',
-      Key: {
-        categoryId: product.categoryId,
-        code: product.code
-      },
-      AttributeUpdates: {
-        paymentMethodId: {
-          Action: 'DELETE'
-        },
-        reservedTime: {
-          Action: 'DELETE'
-        },
-        reservedTo: {
-          Action: 'DELETE'
-        }
-      },
-
-      ReturnValues: 'UPDATED_NEW'
+    if (item.transactionTime) {
+      console.log({dbl_transactionTime: item.transactionTime, item: item, product: product})
+      return
     }
-    console.log('update_options ', update_options)
+      const update_options = {
+        TableName: 'prod-poff-product',
+        Key: {
+          categoryId: product.categoryId,
+          code: product.code
+        },
+        AttributeUpdates: {
+          paymentMethodId: {
+            Action: 'DELETE'
+          },
+          reservedTime: {
+            Action: 'DELETE'
+          },
+          reservedTo: {
+            Action: 'DELETE'
+          }
+        },
 
-    const updatedItem = await docClient.update(update_options).promise()
-    console.log('updatedItem ', updatedItem)
-  } else {
-    console.log('dbl_transactionTime ', item.transactionTime)
-  }
+        ReturnValues: 'UPDATED_NEW'
+      }
+      console.log('update_options ', update_options)
+
+      const updatedItem = await docClient.update(update_options).promise()
+      console.log('updatedItem ', updatedItem)
+
 
     if (event.queryStringParameters.cancel_url) {
       cancel_url = event.queryStringParameters.cancel_url
@@ -89,9 +90,12 @@ exports.handler = async (event) => {
 
   if (mkResponse.status === 'COMPLETED') {
 
-    if (!item.transactionTime){
-    //EMAIL
-    try {
+    if (item.transactionTime) {
+      console.log({dblem_transactionTime: item.transactionTime, item: item, product: product})
+      return
+    }
+
+    try { //EMAIL
       let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
 
       var lambdaParams = {
@@ -106,10 +110,8 @@ exports.handler = async (event) => {
     } catch (error) {
       console.log(error)
     }
-  } else {
-    console.log('dblem_transactionTime ', item.transactionTime)
-  }
 
+    // add transaction time
     const updatedItem2 = await docClient.update({
       TableName: 'prod-poff-product',
       Key: {
@@ -135,7 +137,8 @@ exports.handler = async (event) => {
       Item: {
         cognitoSub: product.userId,
         passCode: product.code,
-        category: product.categoryId
+        category: product.categoryId,
+        transactionTime: mkResponse.message_time
       }
     }).promise()
 
