@@ -146,7 +146,7 @@ exports.handler = async (event) => {
  const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
  console.log(emailRes);
 
- const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+ const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "siimsutt@hotmail.com", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
  console.log(email2Res);
 
 }
