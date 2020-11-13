@@ -87,6 +87,7 @@ exports.handler = async (event) => {
 
   if (mkResponse.status === 'COMPLETED') {
 
+    if (!item.transactionTime){
     //EMAIL
     try {
       let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
@@ -103,6 +104,7 @@ exports.handler = async (event) => {
     } catch (error) {
       console.log(error)
     }
+  }
 
     const updatedItem2 = await docClient.update({
       TableName: 'prod-poff-product',
