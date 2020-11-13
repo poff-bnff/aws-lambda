@@ -4,7 +4,11 @@ const aws = require('aws-sdk')
 const _h = require('../_helpers')
 
 exports.handler = async (event) => {
+  console.log(event)
   const userId = _h.getUserId(event)
+
+  const docClient = new aws.DynamoDB.DocumentClient()
+
 
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
@@ -14,17 +18,36 @@ exports.handler = async (event) => {
     return _h.error([400, 'No movieId'])
   }
 
-  const docClient = new aws.DynamoDB.DocumentClient()
 
-  const deletedItem = await docClient.delete({
-    TableName: 'prod-poff-favourite',
-    Key: {
-      userId: userId,
-      movieId: event.pathParameters.movieId
+  if (event.pathParameters.movieId.split('_')[0] === 'screening') {
+    console.log('screening')
+
+    const deletedScreening = await docClient.delete({
+      TableName: 'prod-poff-savedscreenings',
+      Key: {
+        userId: userId,
+        screeningId: event.pathParameters.movieId.split('_')[1]
+      }
+    }).promise()
+
+    if (deletedScreening) {
+      return { ok: true }
     }
-  }).promise()
 
-  if (deletedItem) {
-    return { ok: true }
+  }
+  else {
+
+
+    const deletedItem = await docClient.delete({
+      TableName: 'prod-poff-favourite',
+      Key: {
+        userId: userId,
+        movieId: event.pathParameters.movieId
+      }
+    }).promise()
+
+    if (deletedItem) {
+      return { ok: true }
+    }
   }
 }
