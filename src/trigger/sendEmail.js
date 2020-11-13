@@ -84,8 +84,7 @@ const SendTemplateEmailFromMailChimp = async (mandrillApiKey, sendTo, templateUs
         },
     };
     const req = https.request(options, (res) => {
-        console.log(`E-kirja saatmine aadressile: ${email}`);
-        console.log("statusCode:", res.statusCode);
+        console.log(`E-kirja saatmine aadressile: ${sendTo} with statusCode ${res.statusCode}`);
         var body = ''
 
       res.on("data", (d) => {
@@ -106,7 +105,7 @@ const SendTemplateEmailFromMailChimp = async (mandrillApiKey, sendTo, templateUs
 }
 exports.handler = async (event) => {
 
-  const mandrillApiKey = await _h.ssmParameter('mandrill-api-key')
+  const mandrillApiKey = await _h.ssmParameter('prod-poff-mandrill-api-key')
 
   console.log('event ', event)
 
@@ -142,19 +141,12 @@ exports.handler = async (event) => {
       userDetails[item.Name] = item.Value
   }
 
+  //SendTemplateEmailFromMailChimp (mandrillApiKey, sendTo, templateUsed, email, firstname, lastname, passtype, passcode, passname)
+
  const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
  console.log(emailRes);
+
  const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
  console.log(email2Res);
-
-//LIVE-i minekuks kommenteeri see sisse
-
-// //kliendi kiri
-//  const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, userDetails.email, "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
-//  console.log(emailRes);
-
-// //passiostu info passi printijatele email puudu
-//  const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "????", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
-//  console.log(email2Res);
 
 }

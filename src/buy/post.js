@@ -70,6 +70,23 @@ exports.handler = async (event) => {
 
   if (mkResponse.status === 'COMPLETED') {
 
+    //EMAIL
+    try {
+      let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
+
+      var lambdaParams = {
+        FunctionName: 'prod3-poff-api-trigger-sendEmail',
+        Payload: merchantData
+      }
+      console.log('invokeParams ', lambdaParams)
+
+      const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+      console.log('response ', lambdaResponse)
+
+    } catch (error) {
+      console.log(error)
+    }
+
     console.log(product.categoryId);
     const items = await docClient.query({
       TableName: 'prod-poff-product',
@@ -128,23 +145,6 @@ exports.handler = async (event) => {
     if (newItem) {
       return _h.redirect(return_url)
     }
-
-    //EMAIL
-      try {
-        let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
-
-        var lambdaParams = {
-          FunctionName: 'prod3-poff-api-trigger-sendEmail',
-          Payload: merchantData
-        }
-        console.log('invokeParams ', lambdaParams)
-
-        const lambdaResponse = await lambda.invoke(lambdaParams).promise()
-        console.log('response ', lambdaResponse)
-
-      } catch (error) {
-        console.log(error)
-      }
 
   }
 
