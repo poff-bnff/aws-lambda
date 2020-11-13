@@ -23,9 +23,6 @@ exports.handler = async (event) => {
 
   console.log('passes ', passes)
 
-  console.log('passcode ', passes.Items[0].passCode);
-  console.log('category ', passes.Items[0].category);
-
   let passesWithInfo = []
 
   if (passes.Items.length > 0) {

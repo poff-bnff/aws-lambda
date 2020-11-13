@@ -9,15 +9,13 @@ exports.handler = async (event) => {
   console.log('event ', event)
 
   const docClient = new aws.DynamoDB.DocumentClient()
+
   const body = _h.getBody(event)
   const mkResponse = JSON.parse(body.json)
   console.log('mkResponse ', mkResponse);
+
   const product = JSON.parse(mkResponse.merchant_data)
-  console.log('mkResponse ', mkResponse)
-
-  console.log(product)
-
-  console.log('mkResponse ', mkResponse)
+  console.log('product', product)
 
   if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
@@ -42,10 +40,10 @@ exports.handler = async (event) => {
 
       ReturnValues: 'UPDATED_NEW'
     }
-
-    console.log(update_options)
+    console.log('update_options ', update_options)
 
     const updatedItem = await docClient.update(update_options).promise()
+    console.log('updatedItem ', updatedItem)
 
     if (event.queryStringParameters.cancel_url) {
       cancel_url = event.queryStringParameters.cancel_url
