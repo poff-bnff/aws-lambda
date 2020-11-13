@@ -62,6 +62,8 @@ exports.handler = async (event) => {
 
     const updatedItem = await docClient.update(update_options).promise()
     console.log('updatedItem ', updatedItem)
+  } else {
+    console.log('dbl_transactionTime ', item.transactionTime)
   }
 
     if (event.queryStringParameters.cancel_url) {
