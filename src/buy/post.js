@@ -106,6 +106,8 @@ exports.handler = async (event) => {
     } catch (error) {
       console.log(error)
     }
+  } else {
+    console.log('dblem_transactionTime ', item.transactionTime)
   }
 
     const updatedItem2 = await docClient.update({
