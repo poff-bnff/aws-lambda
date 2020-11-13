@@ -143,10 +143,20 @@ exports.handler = async (event) => {
 
   //SendTemplateEmailFromMailChimp (mandrillApiKey, sendTo, templateUsed, email, firstname, lastname, passtype, passcode, passname)
 
- const emailRes = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
- console.log(emailRes);
+//kliendikirja koopia Mariannile
+const emailRes1 = await SendTemplateEmailFromMailChimp(mandrillApiKey, "tapferm@gmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+console.log(emailRes1);
 
- const email2Res = await SendTemplateEmailFromMailChimp(mandrillApiKey, "siimsutt@hotmail.com", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
- console.log(email2Res);
+//kliendikirjast koopia Jaanile
+const emailRes2 = await SendTemplateEmailFromMailChimp(mandrillApiKey, "jaan.leppik@poff.ee", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+console.log(emailRes2);
+
+//kiri passi ja kliendi andmetega kassale
+const emailRes3 = await SendTemplateEmailFromMailChimp(mandrillApiKey, "kassa@poff.ee", "PassiOstuInfo", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+console.log(emailRes3);
+
+//kliendikiri
+const emailRes4 = await SendTemplateEmailFromMailChimp(mandrillApiKey, userDetails.email, "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
+console.log(emailRes4);
 
 }
