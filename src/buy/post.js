@@ -12,14 +12,32 @@ exports.handler = async (event) => {
 
   const body = _h.getBody(event)
   const mkResponse = JSON.parse(body.json)
-  console.log('mkResponse ', mkResponse);
+  console.log(mkResponse.status)
+  console.log('mkResponse ', mkResponse)
 
   const product = JSON.parse(mkResponse.merchant_data)
   console.log('product', product)
 
+  const items = await docClient.query({
+    TableName: 'prod-poff-product',
+    KeyConditionExpression: 'categoryId = :categoryId and code = :code',
+    ExpressionAttributeValues: {
+      ':categoryId': product.categoryId,
+      ':code': product.code
+    }
+  }).promise()
+
+  if (items.Items.length === 0) {
+    return _h.error([404, 'No items'])
+  }
+
+  const item = items.Items[0]
+
+
   if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
 
+    if (!item.transactionTime){
     const update_options = {
       TableName: 'prod-poff-product',
       Key: {
@@ -44,6 +62,7 @@ exports.handler = async (event) => {
 
     const updatedItem = await docClient.update(update_options).promise()
     console.log('updatedItem ', updatedItem)
+  }
 
     if (event.queryStringParameters.cancel_url) {
       cancel_url = event.queryStringParameters.cancel_url
@@ -85,23 +104,6 @@ exports.handler = async (event) => {
       console.log(error)
     }
 
-    console.log(product.categoryId);
-    const items = await docClient.query({
-      TableName: 'prod-poff-product',
-      KeyConditionExpression: 'categoryId = :categoryId and code = :code',
-      ExpressionAttributeValues: {
-        ':categoryId': product.categoryId,
-        ':code': product.code
-      }
-    }).promise()
-    console.log(product.categoryId)
-
-    if (items.Items.length === 0) {
-      return _h.error([404, 'No items'])
-    }
-
-    const item = items.Items[0]
-
     const updatedItem2 = await docClient.update({
       TableName: 'prod-poff-product',
       Key: {
@@ -133,9 +135,9 @@ exports.handler = async (event) => {
 
     let return_url
 
-    if(event.queryStringParameters.return_url){
+    if (event.queryStringParameters.return_url) {
       return_url = event.queryStringParameters.return_url
-    }else{
+    } else {
       return_url = 'https://poff.ee/minupoff'
     }
 
