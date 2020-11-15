@@ -368,7 +368,7 @@ functions:
         description: Fetches badges from eventival
         package:
             include:
-                - src/eventival/getBadges
+                - src/eventival/getBadges.js
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:

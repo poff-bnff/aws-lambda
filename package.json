@@ -23,7 +23,7 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "serverless": "2.5.0",
+    "serverless": "^2.5.0",
     "serverless-plugin-git-variables": "4.0.0",
     "standard": "14.3.4"
   }
