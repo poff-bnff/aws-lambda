@@ -8,9 +8,23 @@ const timezonestr = ' 00:00:00 GMT+0200'
 
 function picAndBadges(xml_str) {
   let ev_o = op(JSON.parse(convert.xml2json(xml_str, { compact: true })))
+
+  let badgearr = ev_o.get('person.badges.badge');
+
+  console.log('badgearr ', badgearr)
+  if (!Array.isArray(badgearr)){
+    console.log(ev_o.get('person.badges.badge'))
+    // let arr=[]
+    badgearr = [badgearr]
+    // op.set(ev_o, 'person.badges.badge.0', badgearr)
+    console.log('after ', badgearr)
+
+  }  
+
   const pic_and_badges = {
     photo: ev_o.get(['person', 'photos', 'photo', '_text'], null),
-    badges: ev_o.get('person.badges.badge', [])
+    name: ev_o.get(['person', 'names', 'name_first', '_text'], null),
+    badges: badgearr
       .filter(badge => badge.cancelled._text === '0')
       .map(badge => {
         let cnt = badge.validity_dates.date.length

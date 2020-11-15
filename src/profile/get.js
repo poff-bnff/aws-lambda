@@ -16,74 +16,94 @@ const EVENTIVALBADGEWHITELIST = [
 
 module.exports.handler = async (event) => {
   console.log('event ', event)
+  console.log(_h.getUserId(event))
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
     region: 'eu-central-1'
   })
-
-
+  
   const params = {
     AccessToken: ((event.headers.authorization).split(' '))[1] /* required */
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
   
-  console.log('prindin userDetails')
-  console.log(userDetails)
+  
+  console.log('userDetail ', userDetails)
   const userProfile = {
     username: userDetails.Username,
-    shortlist: await getShortlist(event),
-    savedscreenings: await getSavedScreenings(event),
-    userpasses: await getUserPasses(event),
-    industryAccessLevel: false
   }
-  
+
   for (const item of userDetails.UserAttributes) {
     userProfile[item.Name] = item.Value
   }
+  
+  
+  if (event.headers.origin === 'http://localhost:4000'){
 
-  if (userProfile.identities){
-  userProfile.identities = JSON.parse(userProfile.identities)
-  }
-
-  try{
-    console.log('userDetails.identities ', userProfile.identities)
-    const is_eventival_user = userProfile.identities && userProfile.identities.filter(id => id.providerName === 'Eventival').length > 0
-    console.log('is_eventival_user ', is_eventival_user)
-
-    if (is_eventival_user) {
-      let lambdaParams4 = {
-        FunctionName: 'prod3-poff-api-eventival-getBadges',
-        Payload: JSON.stringify({
-          email: userProfile.email,
-          headers: { authorization: ((event.headers.authorization).split(' '))[1] }
-        })
-      }
-      
-      console.log('eventivalLambdaParams ', lambdaParams4)
-      let _response = await lambda.invoke(lambdaParams4).promise()
-      console.log(_response)
-      const _responseJson = JSON.parse(_response.Payload)
-      console.log(_responseJson)
-      userProfile.eventivalProfile = _responseJson.response.body
-
-      userProfile.industryAccessLevel = userProfile.eventivalProfile.badges.filter(badge => {
-        console.log({badge});
-        if (!EVENTIVALBADGEWHITELIST.includes(badge.type.toUpperCase())) {
-          return false
-        }
-
-        let from = new Date(badge.valid.from).getTime()
-        let now = new Date().getTime()
-        let to = new Date(badge.valid.to).getTime()
-        if (now < from || to < now){
-          return false
-        }
-
-        return true
-      }).length > 0
+    const industryProfile = {
+      username: userProfile.username,
+      profile_filled: true
+    } 
+    
+    if (userProfile.identities){
+    userProfile.identities = JSON.parse(userProfile.identities)
     }
-  } catch(err){
-    console.log(err)
-  }
+
+    industryProfile.industryAccessLevel = false
+
+    try{
+      console.log('userDetails.identities ', userProfile.identities)
+      const is_eventival_user = userProfile.identities && userProfile.identities.filter(id => id.providerName === 'Eventival').length > 0
+      console.log('is_eventival_user ', is_eventival_user)
+    
+      if (is_eventival_user) {
+        let lambdaParams4 = {
+          FunctionName: 'prod3-poff-api-eventival-getBadges',
+          Payload: JSON.stringify({
+            email: userProfile.email,
+            headers: { authorization: ((event.headers.authorization).split(' '))[1] }
+          })
+        }
+        
+        console.log('eventivalLambdaParams ', lambdaParams4)
+        let _response = await lambda.invoke(lambdaParams4).promise()
+        console.log(_response)
+        const _responseJson = JSON.parse(_response.Payload)
+        console.log(_responseJson)
+        industryProfile.eventivalProfile = _responseJson.response.body
+        industryProfile.name = _responseJson.response.body.name
+    
+        industryProfile.industryAccessLevel = industryProfile.eventivalProfile.badges.filter(badge => {
+          console.log({badge});
+          if (!EVENTIVALBADGEWHITELIST.includes(badge.type.toUpperCase())) {
+            return false
+          }
+    
+          let from = new Date(badge.valid.from).getTime()
+          let now = new Date().getTime()
+          let to = new Date(badge.valid.to).getTime()
+          if (now < from || to < now){
+            return false
+          }
+    
+          return true
+        }).length > 0
+      }
+    } catch(err){
+      console.log(err)
+    }
+  console.log('local')
+
+  return industryProfile
+}
+
+  userProfile.shortlist = await getShortlist(event)
+  userProfile.savedscreenings = await getSavedScreenings(event)
+  userProfile.userpasses = await getUserPasses(event)
+
+  
+
+
+
 
   if (userProfile.phone_number) {
     userProfile.phone_number = userProfile.phone_number.replace('+', '')
@@ -160,4 +180,7 @@ async function getShortlist(event) {
   console.log('shortlist ', shortlist)
   return shortlist
 }
+
+
+
 
