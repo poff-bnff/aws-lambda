@@ -18,7 +18,9 @@
   "dependencies": {
     "jsonwebtoken": "8.5.1",
     "jwk-to-pem": "2.0.4",
-    "lodash": "4.17.20"
+    "lodash": "4.17.20",
+    "object-path": "^0.11.5",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "serverless": "2.5.0",

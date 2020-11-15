@@ -35,12 +35,12 @@ module.exports.handler = async (event) => {
   console.log('shortlist ', shortlist)
 
 
-    var lambdaParams2 = {
+  var lambdaParams2 = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
       table: 'prod-poff-savedscreenings',
       headers: { authorization: ((event.headers.authorization).split(' '))[1] }
-     })
+    })
   }
   console.log('invokeParams ', lambdaParams2)
 
@@ -56,7 +56,7 @@ module.exports.handler = async (event) => {
       FunctionName: 'prod3-poff-api-product-get',
       Payload: JSON.stringify({
         headers: { authorization: ((event.headers.authorization).split(' '))[1] }
-       })
+      })
     }
     console.log('invokeParams ', lambdaParams3)
 
@@ -67,7 +67,7 @@ module.exports.handler = async (event) => {
 
     console.log('userpasses ', userpasses)
 
-// } catch(err){null}
+  // } catch(err){null}
 
 
   console.log('prindin userDetails')
@@ -78,7 +78,16 @@ module.exports.handler = async (event) => {
     savedscreenings: savedscreenings,
     userpasses: userpasses
   }
-
+  const is_eventival_user = userDetails.identities && userDetails.identities.filter(id => id.providerName === 'Eventival').length > 0
+  if (is_eventival_user) {
+    let lambdaParams = {
+      FunctionName: 'prod3-poff-api-eventival.getBadges',
+      Payload: JSON.stringify({
+        email: userDetails.email
+      })
+    }
+    userProfile.eventivalbadges = await lambda.invoke(lambdaParams).promise()
+  }
   for (const item of userDetails.UserAttributes) {
     userProfile[item.Name] = item.Value
   }
