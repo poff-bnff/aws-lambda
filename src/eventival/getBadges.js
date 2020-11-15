@@ -9,21 +9,25 @@ const timezonestr = ' 00:00:00 GMT+0200'
 function picAndBadges(xml_str) {
   let ev_o = op(JSON.parse(convert.xml2json(xml_str, { compact: true })))
 
-  let badgearr = ev_o.get('person.badges.badge');
+  let badgearr = ev_o.get('person.badges.badge', [])
 
-  console.log('badgearr ', badgearr)
   if (!Array.isArray(badgearr)){
-    console.log(ev_o.get('person.badges.badge'))
-    // let arr=[]
     badgearr = [badgearr]
-    // op.set(ev_o, 'person.badges.badge.0', badgearr)
-    console.log('after ', badgearr)
-
   }  
+
+  let professionarr = ev_o.get('person.eventival_categorization.professions.profession')
+
+  if (!Array.isArray(professionarr)){
+    professionarr = [professionarr]
+  }  
+
+
 
   const pic_and_badges = {
     photo: ev_o.get(['person', 'photos', 'photo', '_text'], null),
     name: ev_o.get(['person', 'names', 'name_first', '_text'], null),
+    lastName: ev_o.get(['person', 'names', 'name_last', '_text'], null),
+    professions: professionarr,
     badges: badgearr
       .filter(badge => badge.cancelled._text === '0')
       .map(badge => {

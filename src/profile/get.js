@@ -71,6 +71,7 @@ module.exports.handler = async (event) => {
         console.log(_responseJson)
         industryProfile.eventivalProfile = _responseJson.response.body
         industryProfile.name = _responseJson.response.body.name
+        industryProfile.email = userProfile.email
     
         industryProfile.industryAccessLevel = industryProfile.eventivalProfile.badges.filter(badge => {
           console.log({badge});
