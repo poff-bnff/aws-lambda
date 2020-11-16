@@ -45,11 +45,10 @@ function picAndBadges(xml_str) {
 }
 
 exports.handler = async (event) => {
-  console.log(event)
+  console.log('event', event)
   const EVENTIVAL_TOKEN = await _h.ssmParameter('prod-poff-eventival-web-token')
 
-  let email = event.email || 'siimsutt@hotmail.com'
-  console.log(email)
+  let email = event.email
 
 
 

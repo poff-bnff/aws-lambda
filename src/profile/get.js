@@ -37,7 +37,7 @@ module.exports.handler = async (event) => {
   }
   
   
-  if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu/login/'){
+  if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000'){
 
     const industryProfile = {
       username: userProfile.username,
@@ -74,7 +74,7 @@ module.exports.handler = async (event) => {
           console.log(_responseJson.response.statusCode)
           industryProfile.email = userProfile.email
           industryProfile.industryAccessLevel = false 
-          industryProfile.statusMessage = 'failed to fetch userprofile from Eventival' 
+          industryProfile.statusMessage = 'Error: failed to load userprofile from Eventival, login email ' + userProfile.email 
           return industryProfile
         }
 
