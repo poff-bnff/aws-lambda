@@ -69,6 +69,15 @@ module.exports.handler = async (event) => {
         console.log(_response)
         const _responseJson = JSON.parse(_response.Payload)
         console.log(_responseJson)
+
+        if (_responseJson.response.statusCode !== 200){
+          console.log(_responseJson.response.statusCode)
+          industryProfile.email = userProfile.email
+          industryProfile.industryAccessLevel = false 
+          industryProfile.statusMessage = 'failed to fetch userprofile from Eventival' 
+          return industryProfile
+        }
+
         industryProfile.eventivalProfile = _responseJson.response.body
         industryProfile.name = _responseJson.response.body.name
         industryProfile.email = userProfile.email
@@ -78,14 +87,15 @@ module.exports.handler = async (event) => {
           if (!EVENTIVALBADGEWHITELIST.includes(badge.type.toUpperCase())) {
             return false
           }
-    
+
+          
           let from = new Date(badge.valid.from).getTime()
           let now = new Date().getTime()
           let to = new Date(badge.valid.to).getTime()
           if (now < from || to < now){
             return false
           }
-    
+          
           return true
         }).length > 0
       }
@@ -94,6 +104,7 @@ module.exports.handler = async (event) => {
     }
   console.log('local')
 
+  console.log('industryProfile ', industryProfile)
   return industryProfile
 }
 

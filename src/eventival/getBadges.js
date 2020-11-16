@@ -58,24 +58,29 @@ exports.handler = async (event) => {
   const response = await new Promise((resolve, reject) => {
       const req = https.get(`https://bo.eventival.com/poff/24th/en/ws/${EVENTIVAL_TOKEN}/people/badges-for-login-email.xml?login_email=${email}`, function(res) {
         res.on('data', chunk => {
-          dataString += chunk;
-        });
+          dataString += chunk
+        })
         res.on('end', () => {
-          console.log('dataString ', dataString);
+          console.log('EventivalDataString ', email, ' ', dataString)
+          if (res.statusCode === 200){
           resolve({
               statusCode: 200,
               body: picAndBadges(dataString)
-          });
-        });
-      });
+            })
+          }
+          resolve({
+            statusCode: res.statusCode
+          })
+        })
+      })
 
       req.on('error', (e) => {
         reject({
             statusCode: 500,
             body: 'Something went wrong!'
-        });
-      });
-  });
+        })
+      })
+  })
 
   console.log('response', response)
   return {response: response}
