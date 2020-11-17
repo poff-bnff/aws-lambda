@@ -44,7 +44,7 @@ exports.handler = async (event) => {
     console.log('myCalEvents ', myCalEvents)
     // console.log(savedscreenings.Items.map(i => [i]).flat())
 
-    return myCalEvents.Items.map(i => [i]).flat()
+    return myCalEvents.Items.map(i => [i.eventId]).flat()
   }
   
   else {

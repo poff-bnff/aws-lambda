@@ -38,7 +38,26 @@ exports.handler = async (event) => {
       return { ok: true }
     }
 
-  } else {
+  } 
+  else if (event.pathParameters.movieId.split('_')[0] === 'event') {
+
+    const newItem = await docClient.put({
+      TableName: 'prod-poff-myCalEvents',
+      Item: {
+        userId: userId,
+        eventId: event.pathParameters.movieId.split('_')[1]
+
+
+      }
+    }).promise()
+
+    if (newItem) {
+      return { ok: true }
+    }
+
+  } 
+  
+  else {
 
 
     const newItem = await docClient.put({
