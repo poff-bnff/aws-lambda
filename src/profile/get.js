@@ -20,30 +20,30 @@ module.exports.handler = async (event) => {
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
     region: 'eu-central-1'
   })
-  
+
   const params = {
     AccessToken: ((event.headers.authorization).split(' '))[1] /* required */
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
-  
-  
+
+
   console.log('userDetail ', userDetails)
   const userProfile = {
-    username: userDetails.Username,
+    // username: userDetails.Username,
   }
 
   for (const item of userDetails.UserAttributes) {
     userProfile[item.Name] = item.Value
   }
-  
-  
+
+
   if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000'){
 
     const industryProfile = {
-      username: userProfile.username,
+      sub: userProfile.sub,
       profile_filled: true
-    } 
-    
+    }
+
     if (userProfile.identities){
     userProfile.identities = JSON.parse(userProfile.identities)
     }
@@ -54,7 +54,7 @@ module.exports.handler = async (event) => {
       console.log('userDetails.identities ', userProfile.identities)
       const is_eventival_user = userProfile.identities && userProfile.identities.filter(id => id.providerName === 'Eventival').length > 0
       console.log('is_eventival_user ', is_eventival_user)
-    
+
       if (is_eventival_user) {
         let lambdaParams4 = {
           FunctionName: 'prod3-poff-api-eventival-getBadges',
@@ -63,7 +63,7 @@ module.exports.handler = async (event) => {
             headers: { authorization: ((event.headers.authorization).split(' '))[1] }
           })
         }
-        
+
         console.log('eventivalLambdaParams ', lambdaParams4)
         let _response = await lambda.invoke(lambdaParams4).promise()
         console.log(_response)
@@ -73,29 +73,29 @@ module.exports.handler = async (event) => {
         if (_responseJson.response.statusCode !== 200){
           console.log(_responseJson.response.statusCode)
           industryProfile.email = userProfile.email
-          industryProfile.industryAccessLevel = false 
-          industryProfile.statusMessage = 'Error: failed to load userprofile from Eventival, login email ' + userProfile.email 
+          industryProfile.industryAccessLevel = false
+          industryProfile.statusMessage = 'Error: failed to load userprofile from Eventival, login email ' + userProfile.email
           return industryProfile
         }
 
         industryProfile.eventivalProfile = _responseJson.response.body
         industryProfile.name = _responseJson.response.body.name
         industryProfile.email = userProfile.email
-    
+
         industryProfile.industryAccessLevel = industryProfile.eventivalProfile.badges.filter(badge => {
           console.log({badge});
           if (!EVENTIVALBADGEWHITELIST.includes(badge.type.toUpperCase())) {
             return false
           }
 
-          
+
           let from = new Date(badge.valid.from).getTime()
           let now = new Date().getTime()
           let to = new Date(badge.valid.to).getTime()
           if (now < from || to < now){
             return false
           }
-          
+
           return true
         }).length > 0
       }
@@ -112,7 +112,7 @@ module.exports.handler = async (event) => {
   userProfile.savedscreenings = await getSavedScreenings(event)
   userProfile.userpasses = await getUserPasses(event)
 
-  
+
 
 
 
