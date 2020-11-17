@@ -160,7 +160,7 @@ const emailRes4 = await SendTemplateEmailFromMailChimp(mandrillApiKey, userDetai
 console.log(emailRes4);
 
 //h36, h00 ostul kliendikirja koopia Siimule, pildi laadimiseks
-if (passType === 'h36' || passType === 'h00' ){
+if (passType === 'h36' || passType === 'h00' || passType === 'jp1' ){
   const emailRes5 = await SendTemplateEmailFromMailChimp(mandrillApiKey, "siimsutt@hotmail.com", "PassiOst", userDetails.email, userDetails.name,  userDetails.family_name, passType, passCode, passNames[passType])
   console.log(emailRes5)
   }

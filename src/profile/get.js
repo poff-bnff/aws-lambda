@@ -81,6 +81,7 @@ module.exports.handler = async (event) => {
         industryProfile.eventivalProfile = _responseJson.response.body
         industryProfile.name = _responseJson.response.body.name
         industryProfile.email = userProfile.email
+        industryProfile.myCal = await getMyCalEvents(event)
     
         industryProfile.industryAccessLevel = industryProfile.eventivalProfile.badges.filter(badge => {
           console.log({badge});
@@ -191,6 +192,25 @@ async function getShortlist(event) {
   })
   console.log('shortlist ', shortlist)
   return shortlist
+}
+
+async function getMyCalEvents(event){
+  var lambdaParams = {
+    FunctionName: 'prod3-poff-api-favourite-get',
+    Payload: JSON.stringify({
+      table: 'prod-poff-myCalEvents',
+      headers: { authorization: ((event.headers.authorization).split(' '))[1] }
+    })
+  }
+  console.log('invokeParams ', lambdaParams)
+
+  const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+  console.log('lambdaResponse ', lambdaResponse)
+
+  const myCalEvents = JSON.parse(lambdaResponse.Payload)
+
+  console.log('myCalEvents ', myCalEvents)
+  return myCalEvents
 }
 
 
