@@ -34,10 +34,22 @@ exports.handler = async (event) => {
       return { ok: true }
     }
 
+  } 
+  else if (event.pathParameters.movieId.split('_')[0] === 'event') {
+    const deletedMyCalEvent = await docClient.delete({
+      TableName: 'prod-poff-myCalEvents',
+      Key: {
+        userId: userId,
+        eventId: event.pathParameters.movieId.split('_')[1]
+      }
+    }).promise()
+
+    if (deletedMyCalEvent) {
+      return { ok: true }
+    }
   }
-  else {
 
-
+    else {
     const deletedItem = await docClient.delete({
       TableName: 'prod-poff-favourite',
       Key: {
