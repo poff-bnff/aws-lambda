@@ -37,7 +37,7 @@ module.exports.handler = async (event) => {
   }
 
 
-  if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000'){
+  if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000' || event.headers.origin === 'https://staging.industry.inscaping.eu'){
 
     const industryProfile = {
       sub: userProfile.sub,
