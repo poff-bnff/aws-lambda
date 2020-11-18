@@ -395,6 +395,20 @@ functions:
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
+    trigger-cognito-get:
+        handler: src/trigger/cognito/get.handler
+        name: ${self:provider.stage}-${self:service}-trigger-cognito-get
+        description: Returns user info according to sub
+        package:
+            include:
+                - src/trigger/cognito/get.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: POST /trigger/sendEmail    
+
+
     trigger-sendEmail-post:
         handler: src/trigger/sendEmail.handler
         name: ${self:provider.stage}-${self:service}-trigger-sendEmail
