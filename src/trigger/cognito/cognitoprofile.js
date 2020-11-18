@@ -1,14 +1,14 @@
 'use strict'
 
 const aws = require('aws-sdk')
-const _h = require('../_helpers')
+const _h = require('../../_helpers')
 
 exports.handler = async (event) => {
   console.log('event ', event)
 
-  const userSub = event.userId
-  // let passType = event.categoryId
-  // let passCode = event.code
+  // const userSub = event.userId
+  const userSub = JSON.parse(event.body).sub
+  
 
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
     region: 'eu-central-1'
