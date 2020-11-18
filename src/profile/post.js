@@ -11,17 +11,15 @@ exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
-
-
   if (event.routeKey) {
     let email
-    for (let val of JSON.parse(event.body)) {
-      if (val.Name === "email") {
+    for (const val of JSON.parse(event.body)) {
+      if (val.Name === 'email') {
         email = val.Value
       }
     }
-    if (event.routeKey === "POST /profile") {
-      console.log("Heureka", email)
+    if (event.routeKey === 'POST /profile') {
+      console.log('Heureka', email)
 
       var lambdaParams = {
         FunctionName: 'prod3-poff-api-trigger-cognito-checkIfUserExists',
@@ -35,44 +33,40 @@ exports.handler = async (event) => {
         return lambdaResponse
       } else {
         const userAttributes = JSON.parse(event.body)
-    let email
-    let password
+        let email
+        let password
 
-    for (const i of userAttributes) {
-      if (i.Name === 'email') {
-        console.log('email ' + i.Value)
-        email = i.Value
-      }
+        for (const i of userAttributes) {
+          if (i.Name === 'email') {
+            console.log('email ' + i.Value)
+            email = i.Value
+          }
 
-      if (i.Name === 'password') {
-        console.log('password ' + i.Value)
-        password = i.Value
-        userAttributes.pop(i)
-      }
+          if (i.Name === 'password') {
+            console.log('password ' + i.Value)
+            password = i.Value
+            userAttributes.pop(i)
+          }
+        }
 
-    }
+        var params = {
+          ClientId: clientId, /* required */
+          Password: password, /* required */
+          Username: email, /* required */
 
-    var params = {
-      ClientId: clientId, /* required */
-      Password: password, /* required */
-      Username: email, /* required */
+          UserAttributes: userAttributes
 
-      UserAttributes: userAttributes
+        }
 
-    }
+        const response = await cognitoidentityserviceprovider.signUp(params).promise()
 
-    const response = await cognitoidentityserviceprovider.signUp(params).promise()
-
-    return response
-
+        return response
       }
     }
   }
 
-
-
   if (event.source === 'preSignUpMergeTrigger') {
-    console.log('test');
+    console.log('test')
 
     var params = {
       UserPoolId: userPoolId,
@@ -83,10 +77,7 @@ exports.handler = async (event) => {
     console.log(params)
     const response = await cognitoidentityserviceprovider.adminCreateUser(params).promise()
 
-    console.log(response);
+    console.log(response)
     return response
   }
-
-
-
 }

@@ -7,7 +7,6 @@ var cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider()
 module.exports.handler = async (event) => {
   console.log('event ', event)
 
-
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
   const clientId = await _h.ssmParameter('prod-poff-cognito-client2-id')
 
@@ -22,7 +21,7 @@ module.exports.handler = async (event) => {
   const lambdaResponse = await lambda.invoke(lambdaParams).promise()
   console.log('response ', lambdaResponse)
 
-  let sub = JSON.parse(lambdaResponse.Payload)
+  const sub = JSON.parse(lambdaResponse.Payload)
   console.log(Boolean(!data.code))
 
   if (!data.code) {
@@ -40,7 +39,6 @@ module.exports.handler = async (event) => {
     var response = await cognitoidentityserviceprovider.adminUpdateUserAttributes(params1).promise()
     console.log(response)
 
-
     var params = {
       ClientId: clientId, /* required */
       Username: data.loginUsername /* required */
@@ -48,7 +46,6 @@ module.exports.handler = async (event) => {
 
     var response = await cognitoidentityserviceprovider.forgotPassword(params).promise()
     console.log(response)
-
 
     return { todo: true }
   }

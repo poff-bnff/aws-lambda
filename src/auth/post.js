@@ -4,7 +4,6 @@ const aws = require('aws-sdk')
 const _h = require('../_helpers')
 var lambda = new aws.Lambda()
 
-
 exports.handler = async (event) => {
   console.log('event', event)
 
@@ -16,7 +15,6 @@ exports.handler = async (event) => {
   console.log('data', data)
 
   if (data.loginUsername) {
-
     var lambdaParams = {
       FunctionName: 'prod3-poff-api-trigger-cognito-checkIfUserExists',
       Payload: event.body
@@ -26,18 +24,16 @@ exports.handler = async (event) => {
     const lambdaResponse = await lambda.invoke(lambdaParams).promise()
     console.log('lambdaResponse ', lambdaResponse)
 
-    if (lambdaResponse.Payload === 'false'){
-      return {noUserEmail: data.loginUsername, user: false}
+    if (lambdaResponse.Payload === 'false') {
+      return { noUserEmail: data.loginUsername, user: false }
     }
 
-    if (lambdaResponse.Payload){
-      let payload = JSON.parse(lambdaResponse.Payload)
-      if (payload.userStatus === 'UNCONFIRMED'){
-        return {email: payload.email, confirmed: false}
+    if (lambdaResponse.Payload) {
+      const payload = JSON.parse(lambdaResponse.Payload)
+      if (payload.userStatus === 'UNCONFIRMED') {
+        return { email: payload.email, confirmed: false }
       }
     }
-
-
   }
 
   const cognito = new aws.CognitoIdentityServiceProvider()

@@ -10,7 +10,6 @@ exports.handler = async (event) => {
 
   const docClient = new aws.DynamoDB.DocumentClient()
 
-
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
   }
@@ -37,16 +36,12 @@ exports.handler = async (event) => {
     if (newItem) {
       return { ok: true }
     }
-
-  } 
-  else if (event.pathParameters.movieId.split('_')[0] === 'event') {
-
+  } else if (event.pathParameters.movieId.split('_')[0] === 'event') {
     const newItem = await docClient.put({
       TableName: 'prod-poff-myCalEvents',
       Item: {
         userId: userId,
         eventId: event.pathParameters.movieId.split('_')[1]
-
 
       }
     }).promise()
@@ -54,12 +49,7 @@ exports.handler = async (event) => {
     if (newItem) {
       return { ok: true }
     }
-
-  } 
-  
-  else {
-
-
+  } else {
     const newItem = await docClient.put({
       TableName: 'prod-poff-favourite',
       Item: {

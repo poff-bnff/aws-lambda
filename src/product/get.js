@@ -26,11 +26,7 @@ exports.handler = async (event) => {
   let passesWithInfo = []
 
   if (passes.Items.length > 0) {
-
-
-
-    for (let pass of passes.Items) {
-
+    for (const pass of passes.Items) {
       const passWithInfo = await docClient.query({
         TableName: 'prod-poff-product',
         KeyConditionExpression: 'categoryId = :catId and code = :code',

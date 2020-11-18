@@ -8,7 +8,6 @@ const getMkConfig = async () => {
   const mkKey = await _h.ssmParameter('prod-poff-maksekeskus-secret-key')
   const mkHost = await _h.ssmParameter('prod-poff-maksekeskus-host')
 
-
   return new Promise((resolve, reject) => {
     const options = {
       hostname: mkHost,

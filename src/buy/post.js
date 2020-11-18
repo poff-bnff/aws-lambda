@@ -33,43 +33,40 @@ exports.handler = async (event) => {
 
   const item = items.Items[0]
 
-
   if (mkResponse.status === 'CANCELLED' || mkResponse.status === 'EXPIRED') {
     let cancel_url
 
     if (item.transactionTime) {
-      console.log({dbl_transactionTime: item.transactionTime, item: item, product: product})
+      console.log({ dbl_transactionTime: item.transactionTime, item: item, product: product })
       return
     }
-      const update_options = {
-        TableName: 'prod-poff-product',
-        Key: {
-          categoryId: product.categoryId,
-          code: product.code
+    const update_options = {
+      TableName: 'prod-poff-product',
+      Key: {
+        categoryId: product.categoryId,
+        code: product.code
+      },
+      AttributeUpdates: {
+        paymentMethodId: {
+          Action: 'DELETE'
         },
-        AttributeUpdates: {
-          paymentMethodId: {
-            Action: 'DELETE'
-          },
-          reservedTime: {
-            Action: 'DELETE'
-          },
-          reservedTo: {
-            Action: 'DELETE'
-          }
+        reservedTime: {
+          Action: 'DELETE'
         },
+        reservedTo: {
+          Action: 'DELETE'
+        }
+      },
 
-        ReturnValues: 'UPDATED_NEW'
-      }
-      console.log('update_options ', update_options)
+      ReturnValues: 'UPDATED_NEW'
+    }
+    console.log('update_options ', update_options)
 
-      const updatedItem = await docClient.update(update_options).promise()
-      console.log('updatedItem ', updatedItem)
-
+    const updatedItem = await docClient.update(update_options).promise()
+    console.log('updatedItem ', updatedItem)
 
     if (event.queryStringParameters.cancel_url) {
       cancel_url = event.queryStringParameters.cancel_url
-
     } else {
       return _h.redirect('https://poff.ee')
     }
@@ -89,14 +86,13 @@ exports.handler = async (event) => {
   }
 
   if (mkResponse.status === 'COMPLETED') {
-
     if (item.transactionTime) {
-      console.log({dblem_transactionTime: item.transactionTime, item: item, product: product})
+      console.log({ dblem_transactionTime: item.transactionTime, item: item, product: product })
       return
     }
 
-    try { //EMAIL
-      let merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
+    try { // EMAIL
+      const merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
 
       var lambdaParams = {
         FunctionName: 'prod3-poff-api-trigger-sendEmail',
@@ -106,7 +102,6 @@ exports.handler = async (event) => {
 
       const lambdaResponse = await lambda.invoke(lambdaParams).promise()
       console.log('response ', lambdaResponse)
-
     } catch (error) {
       console.log(error)
     }
@@ -131,7 +126,6 @@ exports.handler = async (event) => {
       return _h.error([500, 'Failed to save transaction'])
     }
 
-
     const newItem = await docClient.put({
       TableName: 'prod-poff-userpasses',
       Item: {
@@ -150,11 +144,8 @@ exports.handler = async (event) => {
       return_url = 'https://poff.ee/minupoff'
     }
 
-
     if (newItem) {
       return _h.redirect(return_url)
     }
-
   }
-
 }

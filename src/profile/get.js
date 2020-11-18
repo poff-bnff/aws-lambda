@@ -13,7 +13,6 @@ const EVENTIVALBADGEWHITELIST = [
   'VOLUNTEER'
 ]
 
-
 module.exports.handler = async (event) => {
   console.log('event ', event)
   console.log(_h.getUserId(event))
@@ -26,7 +25,6 @@ module.exports.handler = async (event) => {
   }
   const userDetails = await cognitoidentityserviceprovider.getUser(params).promise()
 
-
   console.log('userDetail ', userDetails)
   const userProfile = {
     // username: userDetails.Username,
@@ -36,27 +34,25 @@ module.exports.handler = async (event) => {
     userProfile[item.Name] = item.Value
   }
 
-
-  if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000' || event.headers.origin === 'https://staging.industry.inscaping.eu'){
-
+  if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000' || event.headers.origin === 'https://staging.industry.inscaping.eu') {
     const industryProfile = {
       sub: userProfile.sub,
       profile_filled: true
     }
 
-    if (userProfile.identities){
-    userProfile.identities = JSON.parse(userProfile.identities)
+    if (userProfile.identities) {
+      userProfile.identities = JSON.parse(userProfile.identities)
     }
 
     industryProfile.industryAccessLevel = false
 
-    try{
+    try {
       console.log('userDetails.identities ', userProfile.identities)
       const is_eventival_user = userProfile.identities && userProfile.identities.filter(id => id.providerName === 'Eventival').length > 0
       console.log('is_eventival_user ', is_eventival_user)
 
       if (is_eventival_user) {
-        let lambdaParams4 = {
+        const lambdaParams4 = {
           FunctionName: 'prod3-poff-api-eventival-getBadges',
           Payload: JSON.stringify({
             email: userProfile.email,
@@ -65,12 +61,12 @@ module.exports.handler = async (event) => {
         }
 
         console.log('eventivalLambdaParams ', lambdaParams4)
-        let _response = await lambda.invoke(lambdaParams4).promise()
+        const _response = await lambda.invoke(lambdaParams4).promise()
         console.log(_response)
         const _responseJson = JSON.parse(_response.Payload)
         console.log(_responseJson)
 
-        if (_responseJson.response.statusCode !== 200){
+        if (_responseJson.response.statusCode !== 200) {
           console.log(_responseJson.response.statusCode)
           industryProfile.email = userProfile.email
           industryProfile.industryAccessLevel = false
@@ -82,41 +78,35 @@ module.exports.handler = async (event) => {
         industryProfile.name = _responseJson.response.body.name
         industryProfile.email = userProfile.email
         industryProfile.myCal = await getMyCalEvents(event)
-    
+
         industryProfile.industryAccessLevel = industryProfile.eventivalProfile.badges.filter(badge => {
-          console.log({badge});
+          console.log({ badge })
           if (!EVENTIVALBADGEWHITELIST.includes(badge.type.toUpperCase())) {
             return false
           }
 
-
-          let from = new Date(badge.valid.from).getTime()
-          let now = new Date().getTime()
-          let to = new Date(badge.valid.to).getTime()
-          if (now < from || to < now){
+          const from = new Date(badge.valid.from).getTime()
+          const now = new Date().getTime()
+          const to = new Date(badge.valid.to).getTime()
+          if (now < from || to < now) {
             return false
           }
 
           return true
         }).length > 0
       }
-    } catch(err){
+    } catch (err) {
       console.log(err)
     }
-  console.log('local')
+    console.log('local')
 
-  console.log('industryProfile ', industryProfile)
-  return industryProfile
-}
+    console.log('industryProfile ', industryProfile)
+    return industryProfile
+  }
 
   userProfile.shortlist = await getShortlist(event)
   userProfile.savedscreenings = await getSavedScreenings(event)
   userProfile.userpasses = await getUserPasses(event)
-
-
-
-
-
 
   if (userProfile.phone_number) {
     userProfile.phone_number = userProfile.phone_number.replace('+', '')
@@ -136,8 +126,7 @@ module.exports.handler = async (event) => {
   return userProfile
 }
 
-
-async function getUserPasses(event) {
+async function getUserPasses (event) {
   var lambdaParams3 = {
     FunctionName: 'prod3-poff-api-product-get',
     Payload: JSON.stringify({
@@ -155,7 +144,7 @@ async function getUserPasses(event) {
   return userpasses
 }
 
-async function getSavedScreenings(event) {
+async function getSavedScreenings (event) {
   var lambdaParams2 = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
@@ -174,7 +163,7 @@ async function getSavedScreenings(event) {
   return savedscreenings
 }
 
-async function getShortlist(event) {
+async function getShortlist (event) {
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
@@ -194,7 +183,7 @@ async function getShortlist(event) {
   return shortlist
 }
 
-async function getMyCalEvents(event){
+async function getMyCalEvents (event) {
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
@@ -212,7 +201,3 @@ async function getMyCalEvents(event){
   console.log('myCalEvents ', myCalEvents)
   return myCalEvents
 }
-
-
-
-

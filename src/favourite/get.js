@@ -29,8 +29,7 @@ exports.handler = async (event) => {
     // console.log(savedscreenings.Items.map(i => [i]).flat())
 
     return savedscreenings.Items.map(i => [i]).flat()
-  } 
-  else if (event.table === 'prod-poff-myCalEvents') {
+  } else if (event.table === 'prod-poff-myCalEvents') {
     console.log('get prod-poff-myCalEvents')
 
     const myCalEvents = await docClient.query({
@@ -45,9 +44,7 @@ exports.handler = async (event) => {
     // console.log(savedscreenings.Items.map(i => [i]).flat())
 
     return myCalEvents.Items.map(i => [i.eventId]).flat()
-  }
-  
-  else {
+  } else {
     const favourites = await docClient.query({
       TableName: 'prod-poff-favourite',
       KeyConditionExpression: 'userId = :userId',

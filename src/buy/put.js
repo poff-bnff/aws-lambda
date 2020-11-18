@@ -40,7 +40,7 @@ const postToMaksekeskus = async (postData) => {
 }
 
 exports.handler = async (event) => {
-  console.log('event ', event);
+  console.log('event ', event)
   const userId = _h.getUserId(event)
   const userEmail = await _h.getUserEmail(event)
   const userIp = _get(event, 'requestContext.http.sourceIp')
@@ -52,10 +52,6 @@ exports.handler = async (event) => {
   console.log('return_url ', return_url)
   const cancel_url = event.queryStringParameters.cancel_url || event.headers.referer
   console.log('cancel_url ', cancel_url)
-
-
-
-
 
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
@@ -142,8 +138,6 @@ exports.handler = async (event) => {
   if (!paymentMethod) {
     return _h.error([400, 'No paymentMethod'])
   }
-
-
 
   return { url: paymentMethod.url }
 }

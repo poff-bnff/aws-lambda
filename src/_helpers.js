@@ -4,8 +4,7 @@ const aws = require('aws-sdk')
 const jwt = require('jsonwebtoken')
 const querystring = require('querystring')
 const url = require('url')
-const https = require("https")
-
+const https = require('https')
 
 const getRefererHost = (event) => {
   const referer_url = url.parse(getHeader(event, 'referer'))
@@ -19,7 +18,7 @@ const getRefererLang = (event) => {
   const referer_url = url.parse(getHeader(event, 'referer'))
   console.log('referer_url ', referer_url)
   const referer_path = referer_url.pathname
-  console.log('referer_path ', referer_path);
+  console.log('referer_path ', referer_path)
   // const referer_host = referer_url.host
   // return `${referer_protocol}//${referer_host}`
 }
@@ -63,7 +62,6 @@ exports.getUserId = (event) => {
   if (!token) { return }
 
   console.log(jwt.decode(token))
-
 
   return jwt.decode(token).sub
 }
@@ -123,19 +121,18 @@ exports.redirect = (url) => {
 }
 
 exports.validateToken = async (event) => {
-  console.log(event);
+  console.log(event)
 
-  let token = jwt.decode(event)
-console.log('token ', token);
-console.log(Date.now());
-console.log(token.exp);
+  const token = jwt.decode(event)
+  console.log('token ', token)
+  console.log(Date.now())
+  console.log(token.exp)
 
-if (token.exp*1000 < Date.now()){
-console.log('expired token')
-return 'expired token'
-}
+  if (token.exp * 1000 < Date.now()) {
+    console.log('expired token')
+    return 'expired token'
+  }
   const keys = await ssmParameter('prod-poff-cognito-test')
-  console.log(keys);
+  console.log(keys)
   return 'valid token'
 }
-

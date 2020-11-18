@@ -10,8 +10,7 @@ exports.handler = async (event) => {
 
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
 
-
-  console.log(event.loginUsername);
+  console.log(event.loginUsername)
   var email = event.loginUsername
   var start = 'email = \"'
   var newUserEmail = email
@@ -23,7 +22,7 @@ exports.handler = async (event) => {
     UserPoolId: userPoolId,
     /* required */
     AttributesToGet: [
-      'email',
+      'email'
       // 'email_verified'
       /* more items */
     ],
@@ -50,14 +49,14 @@ exports.handler = async (event) => {
     return usersList
   }
 
-  if(usersList.Users.length > 0 && event.source === "POST /profile" ){
+  if (usersList.Users.length > 0 && event.source === 'POST /profile') {
     console.log(3)
 
-    let response = []
+    const response = []
 
-    for (let user of usersList.Users){
-      if(user.UserStatus == "EXTERNAL_PROVIDER"){
-        response.push(user.Username.split("_")[0])
+    for (const user of usersList.Users) {
+      if (user.UserStatus == 'EXTERNAL_PROVIDER') {
+        response.push(user.Username.split('_')[0])
       }
     }
     return response
@@ -66,39 +65,32 @@ exports.handler = async (event) => {
   if (usersList.Users.length > 0) {
     console.log(4)
 
-    for (let user of usersList.Users) {
+    for (const user of usersList.Users) {
       console.log(44)
       if (user.UserStatus === 'UNCONFIRMED') {
         console.log(444)
-        let unConfirmedUser = {
+        const unConfirmedUser = {
           email: event.loginUsername,
           sub: user.Username,
           userStatus: user.UserStatus
         }
         return unConfirmedUser
-
       }
     }
-
   }
 
   if (usersList.Users.length > 0) {
     console.log(5)
 
-    for (let user of usersList.Users) {
+    for (const user of usersList.Users) {
       if (user.UserStatus === 'CONFIRMED') {
-        let sub = {
+        const sub = {
           sub: user.Username
         }
         return sub
-
       }
     }
-
-  }
-
-
-  else {
+  } else {
     console.log(6)
     return false
   }

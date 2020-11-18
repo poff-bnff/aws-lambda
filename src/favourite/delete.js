@@ -9,7 +9,6 @@ exports.handler = async (event) => {
 
   const docClient = new aws.DynamoDB.DocumentClient()
 
-
   if (!userId) {
     return _h.error([401, 'Unauthorized'])
   }
@@ -17,7 +16,6 @@ exports.handler = async (event) => {
   if (!event.pathParameters.movieId) {
     return _h.error([400, 'No movieId'])
   }
-
 
   if (event.pathParameters.movieId.split('_')[0] === 'screening') {
     console.log('screening')
@@ -33,9 +31,7 @@ exports.handler = async (event) => {
     if (deletedScreening) {
       return { ok: true }
     }
-
-  } 
-  else if (event.pathParameters.movieId.split('_')[0] === 'event') {
+  } else if (event.pathParameters.movieId.split('_')[0] === 'event') {
     const deletedMyCalEvent = await docClient.delete({
       TableName: 'prod-poff-myCalEvents',
       Key: {
@@ -47,9 +43,7 @@ exports.handler = async (event) => {
     if (deletedMyCalEvent) {
       return { ok: true }
     }
-  }
-
-    else {
+  } else {
     const deletedItem = await docClient.delete({
       TableName: 'prod-poff-favourite',
       Key: {
