@@ -141,11 +141,7 @@ exports.validateToken = async (event) => {
 
 exports.updateEventivalUser = async (email, sub) => {
   console.log('updateEventivalUserHelpers', sub)
-
-  if (email === 'siimsutt@hotmail.com'){
-    return
-  }
-
+ 
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-eventival-getBadges',
     Payload: JSON.stringify({email: email})
