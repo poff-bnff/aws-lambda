@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken')
 const querystring = require('querystring')
 const url = require('url')
 const https = require('https')
+var lambda = new aws.Lambda()
+
 
 const getRefererHost = (event) => {
   const referer_url = url.parse(getHeader(event, 'referer'))
@@ -135,4 +137,45 @@ exports.validateToken = async (event) => {
   const keys = await ssmParameter('prod-poff-cognito-test')
   console.log(keys)
   return 'valid token'
+}
+
+exports.updateEventivalUser = async (email, sub) => {
+  console.log('updateEventivalUserHelpers', sub)
+
+  // if (email === 'siimsutt@hotmail.com'){
+  //   return
+  // }
+
+  var lambdaParams = {
+    FunctionName: 'prod3-poff-api-eventival-getBadges',
+    Payload: JSON.stringify({email: email})
+  }
+
+  console.log('lambdaParams ', lambdaParams)
+
+  const response = await lambda.invoke(lambdaParams).promise()
+  console.log('response ', response)
+
+  const payload = JSON.parse(response.Payload)
+  if (payload.response.statusCode === 404){
+    return false
+  }
+
+  const attributes = {
+    name: payload.response.body.name,
+    family_name: payload.response.body.lastName,
+    sub: sub
+  } 
+
+  lambdaParams = {
+    FunctionName: 'prod3-poff-api-profile-put',
+    Payload: JSON.stringify(attributes)
+  }
+
+  console.log('lambdaParams ', lambdaParams)
+
+  const response2 = await lambda.invoke(lambdaParams).promise()
+  console.log('response ', response2)
+
+  return
 }
