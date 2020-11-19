@@ -36,6 +36,8 @@ exports.handler = async (event) => {
   console.log('checkIfUserExistsResponse ', checkIfUserExistsResponse)
 
   if (checkIfUserExistsResponse.Payload === 'false') {
+    console.log('create baseuser')
+
     const postUser = {
       userName: email,
       source: 'preSignUpMergeTrigger'
@@ -50,6 +52,9 @@ exports.handler = async (event) => {
 
     const postUserResponse = await lambda.invoke(lambdaParams).promise()
     console.log('postUserResponse ', postUserResponse)
+
+    console.log('merge 1socialidentity to baseuser')
+
 
     const baseDestinationUser = JSON.parse(postUserResponse.Payload)
     console.log(baseDestinationUser)
@@ -83,9 +88,9 @@ exports.handler = async (event) => {
 
     return event
   } else {
+    console.log('merge user')
     let usersList = JSON.parse(checkIfUserExistsResponse.Payload)
     console.log('usersList ', usersList)
-    console.log('merge user')
 
     destinationUserUserName = usersList.Users[0].Username.split('_')
 
@@ -128,6 +133,8 @@ exports.handler = async (event) => {
     console.log('response ', response)
     if (sourceUserProviderName === 'Eventival') {
       console.log('Eventival')
+      await updateEventivalUser(email, destinationUserUserName)
+
     }
 
     return event
