@@ -84,7 +84,6 @@ exports.handler = async (event) => {
     if (sourceUserProviderName === 'Eventival') {
       console.log('Eventival')
       await _h.updateEventivalUser(email, sub)
-      // await updateEventivalUser(email, sub)
     }
 
     return event
@@ -134,7 +133,7 @@ exports.handler = async (event) => {
     console.log('response ', response)
     if (sourceUserProviderName === 'Eventival') {
       console.log('Eventival')
-      await updateEventivalUser(email, destinationUserUserName)
+      await _h.updateEventivalUser(email, sub)
 
     }
 

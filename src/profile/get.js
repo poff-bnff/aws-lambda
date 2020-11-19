@@ -35,6 +35,10 @@ module.exports.handler = async (event) => {
   }
 
   if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000' || event.headers.origin === 'https://staging.industry.inscaping.eu') {
+
+    await _h.updateEventivalUser(userProfile.email, userProfile.sub)
+
+
     const industryProfile = {
       sub: userProfile.sub,
       profile_filled: true
@@ -52,6 +56,8 @@ module.exports.handler = async (event) => {
       console.log('is_eventival_user ', is_eventival_user)
 
       if (is_eventival_user) {
+
+
         const lambdaParams4 = {
           FunctionName: 'prod3-poff-api-eventival-getBadges',
           Payload: JSON.stringify({
@@ -126,7 +132,7 @@ module.exports.handler = async (event) => {
   return userProfile
 }
 
-async function getUserPasses (event) {
+async function getUserPasses(event) {
   var lambdaParams3 = {
     FunctionName: 'prod3-poff-api-product-get',
     Payload: JSON.stringify({
@@ -144,7 +150,7 @@ async function getUserPasses (event) {
   return userpasses
 }
 
-async function getSavedScreenings (event) {
+async function getSavedScreenings(event) {
   var lambdaParams2 = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
@@ -163,7 +169,7 @@ async function getSavedScreenings (event) {
   return savedscreenings
 }
 
-async function getShortlist (event) {
+async function getShortlist(event) {
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
@@ -183,7 +189,7 @@ async function getShortlist (event) {
   return shortlist
 }
 
-async function getMyCalEvents (event) {
+async function getMyCalEvents(event) {
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-favourite-get',
     Payload: JSON.stringify({
