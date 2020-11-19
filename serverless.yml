@@ -406,8 +406,20 @@ functions:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: GET /trigger/cognitoprof    
+                httpApi: GET /trigger/cognitoprof   
 
+    trigger-passraport-get:
+        handler: src/trigger/passraport.handler
+        name: ${self:provider.stage}-${self:service}-trigger-passraport
+        description: Sold passes
+        package:
+            include:
+                - src/trigger/passraport.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
+        events:
+            -
+                httpApi: GET /trigger/passraport               
 
     trigger-sendEmail-post:
         handler: src/trigger/sendEmail.handler
