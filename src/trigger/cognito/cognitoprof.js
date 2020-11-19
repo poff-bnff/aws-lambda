@@ -59,12 +59,12 @@ async function checkIndustryUser(email) {
     })
   }
 
-  console.log('eventivalLambdaParams ', lambdaParams)
+  console.log('lambdaParams ', lambdaParams)
   const _response = await lambda.invoke(lambdaParams).promise()
   console.log(_response)
   const payload = JSON.parse(_response.Payload)
   if (payload.response.statusCode === 404){
-    return 'invalid email'
+    return false
   }
   return true
 }
