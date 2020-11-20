@@ -73,7 +73,7 @@ exports.handler = async (event) => {
     ExpressionAttributeValues: {
       ':categoryId': categoryId
     },
-    FilterExpression: 'attribute_not_exists(reservedTime)'
+    FilterExpression: 'attribute_not_exists(reservedTime) and attribute_not_exists(transactionTime)'
   }).promise()
 
   if (items.Items.length === 0) {
