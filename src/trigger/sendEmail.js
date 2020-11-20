@@ -33,7 +33,7 @@ const SendTemplateEmailFromMailChimp = async (mandrillApiKey, sendTo, templateUs
         inline_css: false,
         url_strip_qs: false,
         preserve_recipients: false,
-        view_content_link: false,
+        view_content_link: true,
         bcc_address: '',
         tracking_domain: '',
         signing_domain: '',
