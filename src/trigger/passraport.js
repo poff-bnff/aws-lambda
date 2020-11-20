@@ -16,36 +16,55 @@ exports.handler = async (event) => {
     const docClient = new aws.DynamoDB.DocumentClient()
 
     let raport = {}
+    let eurTotal = 0
+    let pcsTotal = 0
     const categoryIds = ['h08', 'h16', 'h36', 'h00']
 
-    for (const categoryId of categoryIds){
+    for (const categoryId of categoryIds) {
 
-    const items = await docClient.query({
-        TableName: 'prod-poff-product',
-        KeyConditionExpression: 'categoryId = :categoryId',
-        ExpressionAttributeValues: {
-            ':categoryId': categoryId
-        },
-        FilterExpression: 'attribute_exists(transactionTime)'
-    }).promise()
 
-    let total = 0
-    let dates = {}
-    for (const item of items.Items) {
-        total += item.price
-        
-        let date = item.transactionTime.split('T')[0]
+        const items = await docClient.query({
+            TableName: 'prod-poff-product',
+            KeyConditionExpression: 'categoryId = :categoryId',
+            ExpressionAttributeValues: {
+                ':categoryId': categoryId
+            },
+            FilterExpression: 'attribute_exists(transactionTime)'
+        }).promise()
 
-        if (dates.hasOwnProperty(date)){
-            dates[date] += item.price
-        } else {
-            dates[date] = item.price
+        let eur = 0
+        let pcs = 0
+        let dates = {}
+
+        for (const item of items.Items) {
+
+            if (item.categoryName !== 'test') {
+
+
+
+                eur += item.price
+                pcs += 1
+
+                let date = item.transactionTime.split('T')[0]
+
+                if (dates.hasOwnProperty(date)) {
+                    dates[date].eur += item.price
+                    dates[date].pcs += 1
+                } else {
+                    dates[date] = { eur: item.price, pcs: 1 }
+                }
+            }
         }
+        dates.eur = eur
+        dates.pcs = pcs
+        eurTotal += eur
+        pcsTotal += pcs
+
+        raport[categoryId] = dates
     }
-    console.log(dates)
-    console.log('total ', total)
-    raport[categoryId] = dates
-}
+
+    raport.eurTotal = eurTotal
+    raport.pcsTotal = pcsTotal
 
     return raport
 
