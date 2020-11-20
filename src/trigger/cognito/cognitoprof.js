@@ -7,6 +7,7 @@ const lambda = new aws.Lambda()
 
 exports.handler = async (event) => {
   console.log('event ', event)
+  let usersList
 
   const userSub = event.queryStringParameters.sub
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
@@ -26,8 +27,18 @@ exports.handler = async (event) => {
     Limit: 10
   }
 
-  const usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
+  try {
+  usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
   console.log('usersList:', usersList)
+  }
+  catch(err) {
+    return {
+      status: 424,
+      message: 'Failed Dependency',
+      time: new Date()
+  }
+}
+
   if (usersList.Users.length > 0) {
     const user = usersList.Users[0]
     console.log(user)
