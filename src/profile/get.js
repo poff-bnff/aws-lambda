@@ -10,8 +10,11 @@ const EVENTIVALBADGEWHITELIST = [
   'INDUSTRY PRO',
   'GUEST',
   'STAFF',
-  'VOLUNTEER'
+  'VOLUNTEER',
+  'TOETAJA HUNDIPASS'
 ]
+
+
 
 module.exports.handler = async (event) => {
   console.log('event ', event)
@@ -35,6 +38,32 @@ module.exports.handler = async (event) => {
   }
 
   if (event.headers.origin === 'https://industry.poff.ee' || event.headers.origin === 'https://dev.inscaping.eu' || event.headers.origin === 'http://localhost:4000' || event.headers.origin === 'https://staging.industry.inscaping.eu') {
+
+    const EVENTIVALCOGNITO = await _h.ssmParameter('prod-poff-eventivalcognito')
+    console.log(EVENTIVALCOGNITO)
+    const sublist = EVENTIVALCOGNITO.split(',')
+    console.log('array ', sublist)
+
+    if (sublist.includes(userProfile.sub)){
+      console.log('incl ', userProfile.sub)
+      const industryProfile = {
+        sub: userProfile.sub,
+        email: userProfile.email,
+        profile_filled: true,
+        industryAccessLevel: true,
+        name: userProfile.email,
+        myCal: await getMyCalEvents(event)
+      }
+
+      if (userProfile.name){
+        industryProfile.name = userProfile.name
+        industryProfile.lastName = userProfile.family_name
+      }
+
+
+    console.log('industryProfile ', industryProfile)
+    return industryProfile
+    }
 
     await _h.updateEventivalUser(userProfile.email, userProfile.sub)
 
@@ -76,7 +105,7 @@ module.exports.handler = async (event) => {
           console.log(_responseJson.response.statusCode)
           industryProfile.email = userProfile.email
           industryProfile.industryAccessLevel = false
-          industryProfile.statusMessage = 'Error: failed to load userprofile from Eventival, login email ' + userProfile.email
+          industryProfile.statusMessage = 'Error: failed to load userprofile from Eventival for login email ' + userProfile.email
           return industryProfile
         }
 
