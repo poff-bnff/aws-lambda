@@ -18,6 +18,15 @@ const EVENTIVALBADGEWHITELIST = [
 
 module.exports.handler = async (event) => {
   console.log('event ', event)
+
+  if (!event.headers.authorization){
+    console.log('ip, ', event.requestContext.http.sourceIp)
+
+    return {ip: event.requestContext.http.sourceIp}
+  }
+
+
+
   console.log(_h.getUserId(event))
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
     region: 'eu-central-1'
