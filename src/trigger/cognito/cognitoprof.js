@@ -44,7 +44,7 @@ exports.handler = async (event) => {
     const user = usersList.Users[0]
     console.log(user)
 
-    const chatUser = {}
+    const chatUser = {industryUser: true}
 
     for (const attribute of user.Attributes) {
       console.log(attribute)
@@ -63,7 +63,9 @@ exports.handler = async (event) => {
       }
     }
 
+    if (chatUser.industryUser){
     chatUser.industryUser = await checkIndustryUser(chatUser.email)
+    }
     console.log('return chatUser', chatUser)
 
 
