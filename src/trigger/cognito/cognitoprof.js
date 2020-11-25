@@ -1,6 +1,7 @@
 'use strict'
 
 const aws = require('aws-sdk')
+const { identity } = require('lodash')
 const _h = require('../../_helpers')
 const lambda = new aws.Lambda()
 
@@ -22,22 +23,22 @@ exports.handler = async (event) => {
 
   var params = {
     UserPoolId: userPoolId,
-    AttributesToGet: ['email', 'name', 'family_name'],
+    AttributesToGet: ['email', 'name', 'family_name', 'identities'],
     Filter: filter,
     Limit: 10
   }
 
   try {
-  usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
-  console.log('usersList:', usersList)
+    usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
+    console.log('usersList:', usersList)
   }
-  catch(err) {
+  catch (err) {
     return {
       status: 424,
       message: 'Failed Dependency',
       time: new Date()
+    }
   }
-}
 
   if (usersList.Users.length > 0) {
     const user = usersList.Users[0]
@@ -47,7 +48,24 @@ exports.handler = async (event) => {
 
     for (const attribute of user.Attributes) {
       console.log(attribute)
-      chatUser[attribute.Name] = attribute.Value
+      if (attribute.Name === 'identities') {
+
+        let providerNames = []
+        for (const identity of JSON.parse(attribute.Value)) {
+          console.log('identity ', identity)
+          providerNames.push(identity.providerName)
+        }
+        if (!providerNames.includes('Eventival')) {
+          return {
+            status: 424,
+            message: 'Failed Dependency',
+            time: new Date()
+          }
+
+        }
+      } else {
+        chatUser[attribute.Name] = attribute.Value
+      }
     }
 
     console.log('chatUser', chatUser)
@@ -74,7 +92,7 @@ async function checkIndustryUser(email) {
   const _response = await lambda.invoke(lambdaParams).promise()
   console.log(_response)
   const payload = JSON.parse(_response.Payload)
-  if (payload.response.statusCode === 404){
+  if (payload.response.statusCode === 404) {
     return false
   }
   return true
