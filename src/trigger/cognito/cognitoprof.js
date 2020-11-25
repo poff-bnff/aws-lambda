@@ -56,24 +56,20 @@ exports.handler = async (event) => {
           providerNames.push(identity.providerName)
         }
         if (!providerNames.includes('Eventival')) {
-          return {
-            status: 424,
-            message: 'Failed Dependency',
-            time: new Date()
-          }
-
+          chatUser.industryUser = false
         }
       } else {
         chatUser[attribute.Name] = attribute.Value
       }
     }
 
-    console.log('chatUser', chatUser)
-
     chatUser.industryUser = await checkIndustryUser(chatUser.email)
+    console.log('return chatUser', chatUser)
+
 
     return chatUser
   } else {
+    console.log('return { user: false }')
     return { user: false }
   }
 }
