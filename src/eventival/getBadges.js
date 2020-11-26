@@ -51,26 +51,32 @@ function picAndBadges (xml_str, event) {
   }
 
 
-  // console.log('pic and badges ', pic_and_badges)
+  console.log('pic and badges ', pic_and_badges)
   
-  // const badges = pic_and_badges.badges
-  // console.log('badges ', badges)
+  const badges = pic_and_badges.badges
+  console.log('badges ', badges)
 
-  // for (let i = 0; i < badges.length; i++){
-  //   console.log('badge ', badges[i])
-  //   console.log((EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())))
-  //   console.log('i ', i)
-  //   if (EVENTIVALBADGEWHITELIST.includes(badges[i].type)){
-  //     break
-  //   }
-  //   console.log('i ', i)
-  //   console.log('length ', badges.length)
+  if (badges.length === 0){
+    console.log('Eventival Error NoAccreditation ', event.email)
+  }
 
-  //   if (i === badges.length){
-  //     console.log('Eventival Error NoAccreditation ', event.email)
-  //   }
-  // }
+  for (let i = 0; i < badges.length; i++){
+    console.log('badge ', badges[i])
+    console.log((EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())))
+    console.log('i1 ', i)
+    if (EVENTIVALBADGEWHITELIST.includes(badges[i].type)){
+      console.log('about to break')
+      break
+    }
+    console.log('i2 ', i)
+    console.log('length ', badges.length)
 
+    if (i === badges.length-1){
+      console.log('Eventival Error NoAccreditation ', event.email)
+    }
+  }
+
+  console.log('pic and badges ', pic_and_badges)
   return pic_and_badges
 }
 
