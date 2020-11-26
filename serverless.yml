@@ -395,6 +395,16 @@ functions:
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
+    trigger-cognito-editConfirmationEmail:
+        handler: src/trigger/cognito/editConfirmationEmail.handler
+        name: ${self:provider.stage}-${self:service}-trigger-cognito-editConfirmationEmail
+        description: Edit confirmation email.
+        package:
+            include:
+                - src/trigger/cognito/editConfirmationEmail.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}        
+
     trigger-cognito-get:
         handler: src/trigger/cognito/cognitoprof.handler
         name: ${self:provider.stage}-${self:service}-trigger-cognito-cognitoprof

@@ -3,9 +3,20 @@ const convert = require('xml-js')
 var op = require('object-path')
 const _h = require('../_helpers')
 
+const EVENTIVALBADGEWHITELIST = [
+  'MANAGEMENT',
+  'JURY',
+  'INDUSTRY ACCESS',
+  'INDUSTRY PRO',
+  'GUEST',
+  'STAFF',
+  'VOLUNTEER',
+  'TOETAJA HUNDIPASS'
+]
+
 const timezonestr = ' 00:00:00 GMT+0200'
 
-function picAndBadges (xml_str) {
+function picAndBadges (xml_str, event) {
   const ev_o = op(JSON.parse(convert.xml2json(xml_str, { compact: true })))
 
   let badgearr = ev_o.get('person.badges.badge', [])
@@ -38,6 +49,28 @@ function picAndBadges (xml_str) {
         }
       })
   }
+
+
+  // console.log('pic and badges ', pic_and_badges)
+  
+  // const badges = pic_and_badges.badges
+  // console.log('badges ', badges)
+
+  // for (let i = 0; i < badges.length; i++){
+  //   console.log('badge ', badges[i])
+  //   console.log((EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())))
+  //   console.log('i ', i)
+  //   if (EVENTIVALBADGEWHITELIST.includes(badges[i].type)){
+  //     break
+  //   }
+  //   console.log('i ', i)
+  //   console.log('length ', badges.length)
+
+  //   if (i === badges.length){
+  //     console.log('Eventival Error NoAccreditation ', event.email)
+  //   }
+  // }
+
   return pic_and_badges
 }
 
@@ -59,7 +92,7 @@ exports.handler = async (event) => {
         if (res.statusCode === 200) {
           resolve({
             statusCode: 200,
-            body: picAndBadges(dataString)
+            body: picAndBadges(dataString, event)
           })
         }
         resolve({

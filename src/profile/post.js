@@ -58,7 +58,12 @@ exports.handler = async (event) => {
 
         }
 
+        if (email === 'siim.sutt.1@eesti.ee'){
+          console.log('test')
+        }
+
         const response = await cognitoidentityserviceprovider.signUp(params).promise()
+        console.log('signUpResponse ', response)
 
         return response
       }
