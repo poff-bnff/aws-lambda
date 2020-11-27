@@ -50,29 +50,23 @@ function picAndBadges (xml_str, event) {
       })
   }
 
-
-  console.log('pic and badges ', pic_and_badges)
+  const errMessage = 'Eventival Error NoAccreditation ' + event.email
   
   const badges = pic_and_badges.badges
   console.log('badges ', badges)
 
   if (badges.length === 0){
-    console.log('Eventival Error NoAccreditation ', event.email)
+    console.log(errMessage)
   }
 
   for (let i = 0; i < badges.length; i++){
-    console.log('badge ', badges[i])
-    console.log((EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())))
-    console.log('i1 ', i)
     if (EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())){
-      console.log('about to break')
+      console.log('break')
       break
     }
-    console.log('i2 ', i)
-    console.log('length ', badges.length)
 
     if (i === badges.length-1){
-      console.log('Eventival Error NoAccreditation ', event.email)
+      console.log(errMessage)
     }
   }
 
