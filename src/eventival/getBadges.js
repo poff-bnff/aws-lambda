@@ -64,7 +64,7 @@ function picAndBadges (xml_str, event) {
     console.log('badge ', badges[i])
     console.log((EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())))
     console.log('i1 ', i)
-    if (EVENTIVALBADGEWHITELIST.includes(badges[i].type)){
+    if (EVENTIVALBADGEWHITELIST.includes(badges[i].type.toUpperCase())){
       console.log('about to break')
       break
     }
