@@ -20,6 +20,7 @@ module.exports.handler = async (event) => {
   console.log('event ', event)
 
 
+ 
   // Chat for not logged in users
   // if (!event.headers.authorization){
   //   console.log('ip, ', event.requestContext.http.sourceIp)
@@ -27,6 +28,11 @@ module.exports.handler = async (event) => {
   //   return {ip: event.requestContext.http.sourceIp}
   // }
 
+
+  if (_h.getUserId(event) === 'a95964fd-ea4a-47e1-a4c8-1c5328cbccbb'){
+    console.log('test')
+    console.log('result ', await _h.validateToken(_h.getAuthorization(event)))
+  }
 
 
   console.log(_h.getUserId(event))
@@ -134,9 +140,9 @@ module.exports.handler = async (event) => {
           const from = new Date(badge.valid.from).getTime()
           const now = new Date().getTime()
           const to = new Date(badge.valid.to).getTime()
-          if (now < from || to < now) {
-            return false
-          }
+          // if (now < from || to < now) {
+          //   return false
+          // }
 
           return true
         }).length > 0

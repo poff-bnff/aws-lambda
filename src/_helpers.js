@@ -2,6 +2,7 @@
 
 const aws = require('aws-sdk')
 const jwt = require('jsonwebtoken')
+var jwkToPem = require('jwk-to-pem')
 const querystring = require('querystring')
 const url = require('url')
 const https = require('https')
@@ -125,18 +126,29 @@ exports.redirect = (url) => {
 exports.validateToken = async (event) => {
   console.log(event)
 
-  const token = jwt.decode(event)
+  const token = jwt.decode(event, {complete: true})
   console.log('token ', token)
   console.log(Date.now())
-  console.log(token.exp)
+  console.log(token.payload.exp)
 
-  if (token.exp * 1000 < Date.now()) {
+  if (token.payload.exp * 1000 < Date.now()) {
     console.log('expired token')
-    return 'expired token'
+    return false
   }
-  const keys = await ssmParameter('prod-poff-cognito-test')
+  const keys = JSON.parse(await ssmParameter('prod-poff-cognito-test'))
   console.log(keys)
-  return 'valid token'
+
+  for (const key of keys.keys){
+    console.log(key)
+    if (key.kid === token.header.kid){
+      const pem = jwkToPem(key.kid)
+      console.log('verif ', jwt.verify(event, pem, { algorithms: ['RS256'] }, function (err, payload){}))
+      console.log('return')
+      return true
+    }
+  }
+
+  return false  
 }
 
 exports.updateEventivalUser = async (email, sub) => {
