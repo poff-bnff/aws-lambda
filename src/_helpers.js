@@ -141,10 +141,15 @@ exports.validateToken = async (event) => {
   for (const key of keys.keys){
     console.log(key)
     if (key.kid === token.header.kid){
-      const pem = jwkToPem(key.kid)
-      console.log('verif ', jwt.verify(event, pem, { algorithms: ['RS256'] }, function (err, payload){}))
-      console.log('return')
+      const pem = jwkToPem(key)
+      console.log('pem ', pem)
+     try {
+      console.log('verif ', jwt.verify(event, pem, { algorithms: ['RS256'] }))
+      jwt.verify(event, pem, { algorithms: ['RS256'] })
       return true
+     } catch(err){console.log (err)}
+      console.log('return')
+      return false
     }
   }
 
@@ -184,6 +189,4 @@ exports.updateEventivalUser = async (email, sub) => {
 
   const response2 = await lambda.invoke(lambdaParams).promise()
   console.log('response ', response2)
-
-  return
 }

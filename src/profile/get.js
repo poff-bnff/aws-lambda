@@ -29,9 +29,8 @@ module.exports.handler = async (event) => {
   // }
 
 
-  if (_h.getUserId(event) === 'a95964fd-ea4a-47e1-a4c8-1c5328cbccbb'){
-    console.log('test')
-    console.log('result ', await _h.validateToken(_h.getAuthorization(event)))
+  if (!await _h.validateToken(_h.getAuthorization(event))){c
+    return {401: 'Unauthorized'}
   }
 
 
