@@ -128,45 +128,6 @@ functions:
             -
                 httpApi: GET /auth/google
 
-    auth-google-post:
-        handler: src/auth/google/post.handler
-        name: ${self:provider.stage}-${self:service}-auth-google-post
-        description: Handles return request from Google auth
-        package:
-            include:
-                - src/auth/google/post.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: POST /auth/google
-
-    auth-microsoft-get:
-        handler: src/auth/microsoft/get.handler
-        name: ${self:provider.stage}-${self:service}-auth-microsoft-get
-        description: Redirects user to auth in Microsoft
-        package:
-            include:
-                - src/auth/microsoft/get.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: GET /auth/microsoft
-
-    auth-microsoft-post:
-        handler: src/auth/microsoft/post.handler
-        name: ${self:provider.stage}-${self:service}-auth-microsoft-post
-        description: Handles return request from Microsoft auth
-        package:
-            include:
-                - src/auth/microsoft/post.js
-        layers:
-            - {Ref: CommonNodeLibsLambdaLayer}
-        events:
-            -
-                httpApi: POST /auth/microsoft
-
     deploy-post:
         handler: src/deploy/post.handler
         name: ${self:provider.stage}-${self:service}-deploy-post
@@ -403,7 +364,7 @@ functions:
             include:
                 - src/trigger/cognito/editConfirmationEmail.js
         layers:
-            - {Ref: CommonNodeLibsLambdaLayer}        
+            - {Ref: CommonNodeLibsLambdaLayer}
 
     trigger-cognito-get:
         handler: src/trigger/cognito/cognitoprof.handler
@@ -416,7 +377,7 @@ functions:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: GET /trigger/cognitoprof   
+                httpApi: GET /trigger/cognitoprof
 
     trigger-passraport-get:
         handler: src/trigger/passraport.handler
@@ -429,7 +390,7 @@ functions:
             - {Ref: CommonNodeLibsLambdaLayer}
         events:
             -
-                httpApi: GET /trigger/passraport               
+                httpApi: GET /trigger/passraport
 
     trigger-sendEmail-post:
         handler: src/trigger/sendEmail.handler
