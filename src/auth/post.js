@@ -12,7 +12,6 @@ exports.handler = async (event) => {
   const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
 
   var data = JSON.parse(event.body)
-  console.log('data', data)
 
   if (data.loginUsername) {
     var lambdaParams = {
