@@ -21,7 +21,7 @@ module.exports.handler = async (event) => {
 
 
  
-  // Chat for not logged in users
+   // Chat for not logged in users
   // if (!event.headers.authorization){
   //   console.log('ip, ', event.requestContext.http.sourceIp)
 
@@ -29,7 +29,7 @@ module.exports.handler = async (event) => {
   // }
 
 
-  if (!await _h.validateToken(_h.getAuthorization(event))){c
+  if (!await _h.validateToken(_h.getAuthorization(event))){
     return {401: 'Unauthorized'}
   }
 
