@@ -1,5 +1,7 @@
+'use strict'
+
 exports.handler = async (event) => {
   const code = event.body
-  console.log(`kood on: ${code}`)
+  console.log(`code: ${code}`)
   return { access_token: 'testtoken' }
 }
