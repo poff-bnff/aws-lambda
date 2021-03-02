@@ -125,7 +125,7 @@ exports.handler = async (event) => {
     Limit: 10
   }
 
-  const passNames = { h08: 'Hundipass 8', h16: 'Hundipass 16', h36: 'Hundipass 36', h00: 'Toetaja Hundipass', jp1: 'Just Filmi Pass' }
+  const passNames = { h08: 'Hundipass 8', h16: 'Hundipass 16', h36: 'Hundipass 36', h00: 'Toetaja Hundipass', jp1: 'Just Filmi Pass', hp1: 'HÕFFi pass', tp: 'Testpass' }
 
   const usersList = await cognitoidentityserviceprovider.listUsers(params).promise()
   console.log('usersList:', usersList)
