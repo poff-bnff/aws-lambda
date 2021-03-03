@@ -91,7 +91,8 @@ exports.handler = async (event) => {
       return
     }
 
-    try { // EMAIL
+    // Email
+    try { 
       const merchantData = JSON.stringify(JSON.parse(mkResponse.merchant_data))
 
       var lambdaParams = {
@@ -105,6 +106,26 @@ exports.handler = async (event) => {
     } catch (error) {
       console.log(error)
     }
+
+    //Sheets
+    try { 
+      let merchantData = JSON.parse(mkResponse.merchant_data)
+      merchantData.amount = mkResponse.amount
+      merchantData.timestamp = mkResponse.message_time
+      merchantData.transaction = mkResponse.transaction
+      merchantData = JSON.stringify(merchantData)
+
+      var lambdaParams = {
+        FunctionName: 'prod3-poff-api-trigger-reportToSheets',
+        Payload: merchantData
+      }
+      console.log('invokeParams ', lambdaParams)
+
+      const lambdaResponse = await lambda.invoke(lambdaParams).promise()
+      console.log('response ', lambdaResponse)
+    } catch (error) {
+      console.log(error)
+    } 
 
     // add transaction time
     const updatedItem2 = await docClient.update({

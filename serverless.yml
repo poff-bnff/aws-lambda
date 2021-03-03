@@ -405,6 +405,15 @@ functions:
             -
                 httpApi: POST /trigger/sendEmail
 
+    trigger-reportToSheets-post:
+        handler: src/trigger/reportToSheets.handler
+        name: ${self:provider.stage}-${self:service}-trigger-reportToSheets
+        description: Creates new entry in pass-buyers table.
+        package:
+            include:
+                - src/trigger/reportToSheets.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}
 
     version:
         handler: src/version/get.handler
