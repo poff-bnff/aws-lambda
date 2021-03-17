@@ -4,35 +4,23 @@ const _h = require('../_helpers')
 
 exports.handler = async (event) => {
   console.log(event)
-  
+
   var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({ region: 'eu-central-1' })
 
   if (event.body) {
-
-
-    console.log(typeof (event.body))
-
-
-    console.log(event.body)
     const userAttributes = JSON.parse(event.body)
-    console.log(userAttributes)
-
     var params = {
-      AccessToken: ((event.headers.authorization).split(' '))[1], /* required */
+      AccessToken: ((event.headers.authorization).split(' '))[1],
       UserAttributes: userAttributes
-      /* more items */
-
     }
-
-    console.log(params)
-    console.log(typeof (params.UserAttributes))
-
     const update = await cognitoidentityserviceprovider.updateUserAttributes(params).promise()
-    console.log(update, 'put')
 
+    const toSheets = { User: { Attributes: params } }
+    if (update != null) { await _h.writeToSheets(toSheets) }
     return { status: 'ok' }
+
   } else if (event.sub) {
-    console.log('sub ', event.sub)
+    console.log(event)
 
     const userPoolId = await _h.ssmParameter('prod-poff-cognito-pool-id')
 
@@ -41,17 +29,12 @@ exports.handler = async (event) => {
     let userAttributes = []
 
     for (let key in event) {
-      console.log(key)
-      console.log(event[key])
       let value = event[key]
       userAttributes.push({
         Name: key,
         Value: value
       })
     }
-
-    console.log('userAttr ', userAttributes)
-
     var params = {
       UserAttributes: userAttributes,
       UserPoolId: userPoolId, /* required */
