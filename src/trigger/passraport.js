@@ -4,8 +4,10 @@ const _h = require('../_helpers')
 var aws = require('aws-sdk')
 const { identity } = require('lodash')
 
+const { google } = require('googleapis');
+const sheets = google.sheets('v4');
+
 exports.handler = async (event) => {
-    console.log(event)
 
     const sub = _h.getUserId(event)
     const sub2 = await _h.ssmParameter('prod-poff-pass-raport')
@@ -19,6 +21,9 @@ exports.handler = async (event) => {
     }
     if (event.rawQueryString === 'usersraport') {
         return await usersraport()
+    }
+    if (event.rawQueryString === 'attr') {
+        return await attr()
     }
 
     return
@@ -156,8 +161,6 @@ async function usersraport() {
                         const firstProvider = connectedIdentities[dateCreated]
 
                         if (dateCreated - createDate < 1000) {
-                            // console.log(typeof dateCreated);
-                            // console.log(new Date(dateCreated))
                             for (let date in calendar) {
                                 if (date.includes((new Date(dateCreated)).toDateString())) {
                                     calendar[date][firstProvider] += 1
@@ -165,16 +168,6 @@ async function usersraport() {
                                 }
                             }
                         }
-
-                        // console.log((1605905158896).toDateString()) 
-                        // console.log(dateCreated) 
-                        // console.log(dateCreated-createDate)
-
-                        // let x = Math.floor(1605801670764 / 1000)*1000
-                        // console.log(x)
-                        // x = new Date(x)
-                        // x = x.toString().split('.')[0]
-                        // console.log(new Date(1605557571123))
                     }
                 }
                 if (!userAttributes.includes('identities')) {
@@ -198,8 +191,6 @@ async function usersraport() {
         if (result.PaginationToken) {
             params.PaginationToken = result.PaginationToken
 
-            // console.log(calendar);
-
         } else {
 
 
@@ -207,7 +198,7 @@ async function usersraport() {
                 let unicUsersOfDate = []
                 for (const sub of calendar[date].unicSubsSep) {
                     calendar[date].unicSubs.splice(calendar[date].unicSubs.indexOf(sub), 1)
-                    
+
                 }
                 delete calendar[date].unicSubsSep
             }
@@ -225,7 +216,7 @@ async function usersraport() {
             }
 
             for (let date in raport.calendar) {
-                console.log(raport.calendar[date].uncountedSubs)
+                // console.log(raport.calendar[date].uncountedSubs)
             }
 
             return raport
@@ -271,9 +262,79 @@ function createCalendar() {
 }
 
 
+async function attr() {
+    var cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
+    var params = {
+        UserPoolId: await _h.ssmParameter('prod-poff-cognito-pool-id'),
+        AttributesToGet: null,
+        PaginationToken: 'firstPage'
+    }
+    let datatoGS = []
 
-// testfunc()
-// function testfunc(){
-//     const dateCreated = (new Date(1605514434621)).toDateString()
-//     console.log(dateCreated)
-// }
+    while (params.PaginationToken) {
+        params.PaginationToken === 'firstPage' && delete params.PaginationToken
+
+        // datatoGS.push([i])
+        const result = await cognitoidentityserviceprovider.listUsers(params).promise()
+        for (const user of result.Users) {
+            if (!user.Username.includes('google') && !user.Username.includes('facebook') && !user.Username.includes('eventival')) {
+                let userAttributes = []
+                userAttributes[3] = user.UserCreateDate
+                userAttributes[0] = (JSON.stringify(userAttributes[3])).substr(1).split('T')[0]
+                for (const attribute of user.Attributes) {
+                    if (attribute.Name === 'name') {
+                        userAttributes[1] = attribute.Value
+                    }
+                    if (attribute.Name === 'family_name') {
+                        userAttributes[1] = `${userAttributes[1]} ${attribute.Value}`
+                    }
+                    if (attribute.Name === 'email') {
+                        userAttributes[2] = attribute.Value
+                    }
+                }
+                datatoGS.push(userAttributes)
+            }
+        }
+        if (result.PaginationToken) {
+            params.PaginationToken = result.PaginationToken
+        } else {
+            await writeToSheets(datatoGS)
+            return
+        }
+    }
+}
+
+async function writeToSheets(data) {
+
+    const key = JSON.parse(await _h.ssmParameter('prod-poff-GSA-key'))
+    const spreadsheetId = await _h.ssmParameter('prod-poff-sheet-contact')
+
+    const jwtClient = new google.auth.JWT(
+        key.client_email,
+        null,
+        key.private_key,
+        [
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/drive.file',
+            'https://www.googleapis.com/auth/spreadsheets'
+        ],
+        null
+    );
+
+    await jwtClient.authorize()
+
+    const resource = {
+        values: data
+    };
+
+    const request = {
+        spreadsheetId: spreadsheetId,
+        range: 'Sheet1!A2',
+        valueInputOption: 'raw',
+        resource,
+        auth: jwtClient
+    }
+
+    let response = await sheets.spreadsheets.values.append(request)
+    return
+}
