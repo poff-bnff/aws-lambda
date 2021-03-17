@@ -2,7 +2,7 @@ service: poff-api
 
 provider:
     name: aws
-    runtime: nodejs12.x
+    runtime: nodejs14.x
     stage: prod3
     stackName: ${self:provider.stage}-${self:service}
     apiName: ${self:provider.stage}-${self:service}
@@ -31,7 +31,7 @@ layers:
     commonNodeLibs:
         path: layers
         compatibleRuntimes:
-            - nodejs12.x
+            - nodejs14.x
 
 package:
     individually: true
