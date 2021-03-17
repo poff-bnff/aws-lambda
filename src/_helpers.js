@@ -7,6 +7,8 @@ const querystring = require('querystring')
 const url = require('url')
 const https = require('https')
 var lambda = new aws.Lambda()
+const { google } = require('googleapis');
+const sheets = google.sheets('v4');
 
 
 const getRefererHost = (event) => {
@@ -189,4 +191,74 @@ exports.updateEventivalUser = async (email, sub) => {
 
   const response2 = await lambda.invoke(lambdaParams).promise()
   console.log('response ', response2)
+}
+
+exports.writeToSheets = async (data) => {
+  console.log(data);
+
+  const key = JSON.parse(await ssmParameter('prod-poff-GSA-key'))
+  const spreadsheetId = await ssmParameter('prod-poff-sheet-contact')
+
+  const jwtClient = new google.auth.JWT(
+      key.client_email,
+      null,
+      key.private_key,
+      [
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/drive.file',
+          'https://www.googleapis.com/auth/spreadsheets'
+      ],
+      null
+  );
+
+  await jwtClient.authorize()
+
+  // let values = []
+
+  //     let row = []
+  //     for (const d in dataToGS) {
+  //         row.push(dataToGS[d])
+  //     }
+  //     values.push(row)
+
+  console.log(data.User.Attributes); 
+
+  let userDetails = ['date', 'name', 'email', 'timestamp']    
+
+  
+  userDetails[3] = data.User.UserCreateDate
+  userDetails[0] = (JSON.stringify(userDetails[3])).substr(1).split('T')[0]
+
+  for (const attribute of data.User.Attributes) {
+    if (attribute.Name === 'name') {
+        userDetails[1] = attribute.Value
+    } 
+    if (attribute.Name === 'family_name') {
+        userDetails[1] = `${userDetails[1]} ${attribute.Value}`
+    } 
+    if (attribute.Name === 'email') {
+        userDetails[2] = attribute.Value
+    }
+}
+
+if (userDetails[1] === 'name'){
+  userDetails[1] = '[name not submitted]'
+}
+
+  const resource = {
+      values: [userDetails]
+  };
+
+  console.log(resource);
+
+  const request = {
+      spreadsheetId: spreadsheetId,
+      range: 'Sheet1!A2',
+      valueInputOption: 'raw',
+      resource,
+      auth: jwtClient
+  }
+
+  let response = await sheets.spreadsheets.values.append(request)
+  return
 }
