@@ -19,7 +19,7 @@ exports.handler = async (event) => {
       }
     }
     if (event.routeKey === 'POST /profile') {
-      console.log('Heureka', email)
+      console.log(email)
 
       var lambdaParams = {
         FunctionName: 'prod3-poff-api-trigger-cognito-checkIfUserExists',
@@ -43,7 +43,6 @@ exports.handler = async (event) => {
           }
 
           if (i.Name === 'password') {
-            console.log('password ' + i.Value)
             password = i.Value
             userAttributes.pop(i)
           }
@@ -58,10 +57,6 @@ exports.handler = async (event) => {
 
         }
 
-        if (email === 'siim.sutt.1@eesti.ee'){
-          console.log('test')
-        }
-
         const response = await cognitoidentityserviceprovider.signUp(params).promise()
         console.log('signUpResponse ', response)
 
@@ -71,7 +66,6 @@ exports.handler = async (event) => {
   }
 
   if (event.source === 'preSignUpMergeTrigger') {
-    console.log('test')
 
     var params = {
       UserPoolId: userPoolId,
@@ -81,8 +75,9 @@ exports.handler = async (event) => {
 
     console.log(params)
     const response = await cognitoidentityserviceprovider.adminCreateUser(params).promise()
-
     console.log(response)
+    
+    await _h.writeToSheets(response)
     return response
   }
 }
