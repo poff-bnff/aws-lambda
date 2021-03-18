@@ -63,11 +63,12 @@ exports.apiKeyAuthorized = async (event) => {
 
 exports.getUserId = (event) => {
   const token = getAuthorization(event)
-
   if (!token) { return }
+  return jwt.decode(token).sub
+}
 
-  console.log(jwt.decode(token))
-
+exports.getUserIdFromToken = (token) => {
+  if (!token) { return }
   return jwt.decode(token).sub
 }
 
@@ -128,7 +129,7 @@ exports.redirect = (url) => {
 exports.validateToken = async (event) => {
   console.log(event)
 
-  const token = jwt.decode(event, {complete: true})
+  const token = jwt.decode(event, { complete: true })
   console.log('token ', token)
   console.log(Date.now())
   console.log(token.payload.exp)
@@ -140,30 +141,30 @@ exports.validateToken = async (event) => {
   const keys = JSON.parse(await ssmParameter('prod-poff-cognito-test'))
   console.log(keys)
 
-  for (const key of keys.keys){
+  for (const key of keys.keys) {
     console.log(key)
-    if (key.kid === token.header.kid){
+    if (key.kid === token.header.kid) {
       const pem = jwkToPem(key)
       console.log('pem ', pem)
-     try {
-      console.log('verif ', jwt.verify(event, pem, { algorithms: ['RS256'] }))
-      jwt.verify(event, pem, { algorithms: ['RS256'] })
-      return true
-     } catch(err){console.log (err)}
+      try {
+        console.log('verif ', jwt.verify(event, pem, { algorithms: ['RS256'] }))
+        jwt.verify(event, pem, { algorithms: ['RS256'] })
+        return true
+      } catch (err) { console.log(err) }
       console.log('return')
       return false
     }
   }
 
-  return false  
+  return false
 }
 
 exports.updateEventivalUser = async (email, sub) => {
   console.log('updateEventivalUserHelpers', sub)
- 
+
   var lambdaParams = {
     FunctionName: 'prod3-poff-api-eventival-getBadges',
-    Payload: JSON.stringify({email: email})
+    Payload: JSON.stringify({ email: email })
   }
 
   console.log('lambdaParams ', lambdaParams)
@@ -172,7 +173,7 @@ exports.updateEventivalUser = async (email, sub) => {
   console.log('response ', response)
 
   const payload = JSON.parse(response.Payload)
-  if (payload.response.statusCode === 404){
+  if (payload.response.statusCode === 404) {
     return false
   }
 
@@ -180,7 +181,7 @@ exports.updateEventivalUser = async (email, sub) => {
     name: payload.response.body.name,
     family_name: payload.response.body.lastName,
     sub: sub
-  } 
+  }
 
   lambdaParams = {
     FunctionName: 'prod3-poff-api-profile-put',
@@ -193,72 +194,129 @@ exports.updateEventivalUser = async (email, sub) => {
   console.log('response ', response2)
 }
 
-exports.writeToSheets = async (data) => {
-  console.log(data);
+
+exports.getUserProfile = async (sub) => {
+  const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({
+    region: 'eu-central-1'
+  })
+  var params = {
+    UserPoolId: await this.ssmParameter('prod-poff-cognito-pool-id'),
+    Username: sub,
+  }
+  const user = await cognitoidentityserviceprovider.adminGetUser(params).promise()
+  return user
+}
+
+exports.writeToSheets = async (sub) => {
 
   const key = JSON.parse(await ssmParameter('prod-poff-GSA-key'))
   const spreadsheetId = await ssmParameter('prod-poff-sheet-contact')
 
   const jwtClient = new google.auth.JWT(
-      key.client_email,
-      null,
-      key.private_key,
-      [
-          'https://www.googleapis.com/auth/drive',
-          'https://www.googleapis.com/auth/drive.file',
-          'https://www.googleapis.com/auth/spreadsheets'
-      ],
-      null
+    key.client_email,
+    null,
+    key.private_key,
+    [
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file',
+      'https://www.googleapis.com/auth/spreadsheets'
+    ],
+    null
   );
 
   await jwtClient.authorize()
 
-  // let values = []
+  const user = await this.getUserProfile(sub)
 
-  //     let row = []
-  //     for (const d in dataToGS) {
-  //         row.push(dataToGS[d])
-  //     }
-  //     values.push(row)
+  let userDetails = ['date', 'name', 'email', 'timestamp']
 
-  console.log(data.User.Attributes); 
+  userDetails[3] = user.UserCreateDate
+  userDetails[0] = JSON.stringify(user.UserCreateDate).substr(1).split('T')[0]
 
-  let userDetails = ['date', 'name', 'email', 'timestamp']    
-
-  
-  userDetails[3] = data.User.UserCreateDate
-  userDetails[0] = (JSON.stringify(userDetails[3])).substr(1).split('T')[0]
-
-  for (const attribute of data.User.Attributes) {
+  for (const attribute of user.UserAttributes) {
     if (attribute.Name === 'name') {
-        userDetails[1] = attribute.Value
-    } 
-    if (attribute.Name === 'family_name') {
-        userDetails[1] = `${userDetails[1]} ${attribute.Value}`
-    } 
-    if (attribute.Name === 'email') {
-        userDetails[2] = attribute.Value
+      userDetails[1] = attribute.Value
     }
-}
+    if (attribute.Name === 'family_name') {
+      userDetails[1] = `${userDetails[1]} ${attribute.Value}`
+    }
+    if (attribute.Name === 'email') {
+      userDetails[2] = attribute.Value
+    }
+  }
 
-if (userDetails[1] === 'name'){
-  userDetails[1] = '[name not submitted]'
-}
+  if (user.UserAttributes.length > 2) {
 
-  const resource = {
+    let resource = {
+      values: [[userDetails[2]]]
+    };
+
+
+    let range
+    let email
+
+    do {
+      const enterSearchCriteria_request = {
+        spreadsheetId: spreadsheetId,
+        range: 'Sheet1!E4',
+        valueInputOption: 'raw',
+        resource,
+        auth: jwtClient
+      }
+
+      await sheets.spreadsheets.values.update(enterSearchCriteria_request)
+
+      const getRange_request = {
+        spreadsheetId: spreadsheetId,
+        range: 'Sheet1!E2',
+        auth: jwtClient
+      }
+      range = (await sheets.spreadsheets.values.get(getRange_request)).data.values[0][0]
+      email = range.split('_')[1]
+
+      email !== userDetails[2] && console.log(`email mismatch: expected ${userDetails[2]}, got ${email}`)
+
+    } while (email !== userDetails[2])
+
+
+
+    const row = range.split('_')[0]
+
+    resource = {
       values: [userDetails]
-  };
+    };
 
-  console.log(resource);
-
-  const request = {
+    const request = {
       spreadsheetId: spreadsheetId,
-      range: 'Sheet1!A2',
+      range: `Sheet1!A${row}`,
       valueInputOption: 'raw',
       resource,
       auth: jwtClient
-  }
+    }
 
-  let response = await sheets.spreadsheets.values.append(request)
-  return
+    await sheets.spreadsheets.values.update(request)
+    return
+  } else {
+
+    if (userDetails[1] === 'name') {
+      userDetails[1] = '[name not submitted]'
+    }
+
+    const resource = {
+      values: [userDetails]
+    };
+
+    const request = {
+      spreadsheetId: spreadsheetId,
+      range: `Sheet1!A1`,
+      valueInputOption: 'raw',
+      resource,
+      auth: jwtClient
+    }
+
+    await sheets.spreadsheets.values.append(request)
+    return
+  }
 }
+
+
