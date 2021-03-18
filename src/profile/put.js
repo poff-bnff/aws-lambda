@@ -15,8 +15,8 @@ exports.handler = async (event) => {
     }
     const update = await cognitoidentityserviceprovider.updateUserAttributes(params).promise()
 
-    const toSheets = { User: { Attributes: params } }
-    if (update != null) { await _h.writeToSheets(toSheets) }
+    const sub = await _h.getUserIdFromToken(params.AccessToken)
+    if (update != null) { await _h.writeToSheets(sub) }
     return { status: 'ok' }
 
   } else if (event.sub) {
