@@ -75,9 +75,8 @@ exports.handler = async (event) => {
 
     console.log(params)
     const response = await cognitoidentityserviceprovider.adminCreateUser(params).promise()
-    console.log(response)
     
-    await _h.writeToSheets(response)
+    await _h.writeToSheets(event.userName)
     return response
   }
 }
