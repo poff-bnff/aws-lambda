@@ -318,6 +318,7 @@ async function writeToSheets(data) {
     }
 
     await sheets.spreadsheets.values.update(request)
+    await sortSheet(spreadsheetId, jwtClient)
 }
 
 async function clearSheet(spreadsheetId, jwtClient) {
@@ -329,3 +330,38 @@ async function clearSheet(spreadsheetId, jwtClient) {
 
     await sheets.spreadsheets.values.clear(request)
 }
+
+async function sortSheet(spreadsheetId, jwtClient) {
+
+
+    const sortRange = {
+        sortRange: {
+            range: {
+                "sheetId": 0,
+                "startRowIndex": 1,
+                "startColumnIndex": 0
+            },
+            "sortSpecs": [
+                {
+                    "sortOrder": "ASCENDING",
+                    "dimensionIndex": 3
+                }
+            ]
+        }
+    }
+
+
+    const request = {
+        spreadsheetId: spreadsheetId,
+        resource: {
+            requests: [sortRange]
+        },
+        auth: jwtClient
+    }
+
+    await sheets.spreadsheets.batchUpdate(request)
+}
+
+
+
+
