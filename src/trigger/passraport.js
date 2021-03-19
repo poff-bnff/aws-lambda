@@ -278,9 +278,10 @@ async function attr() {
         const result = await cognitoidentityserviceprovider.listUsers(params).promise()
         for (const user of result.Users) {
             if (!user.Username.includes('google') && !user.Username.includes('facebook') && !user.Username.includes('eventival')) {
-                let userAttributes = []
+                let userAttributes = ['createDate', 'name', 'email', 'createTimestamp', 'lastmodTimestamp']
                 userAttributes[3] = user.UserCreateDate
                 userAttributes[0] = (JSON.stringify(userAttributes[3])).substr(1).split('T')[0]
+                userAttributes[4] = user.UserLastModifiedDate
                 for (const attribute of user.Attributes) {
                     if (attribute.Name === 'name') {
                         userAttributes[1] = attribute.Value
@@ -291,6 +292,9 @@ async function attr() {
                     if (attribute.Name === 'email') {
                         userAttributes[2] = attribute.Value
                     }
+                }
+                if (userAttributes[1] === 'name') {
+                    userAttributes[1] = '[name not submitted]'
                 }
                 datatoGS.push(userAttributes)
             }
@@ -323,6 +327,9 @@ async function writeToSheets(data) {
 
     await jwtClient.authorize()
 
+    await clearSheet(spreadsheetId, jwtClient)
+
+
     const resource = {
         values: data
     };
@@ -335,6 +342,17 @@ async function writeToSheets(data) {
         auth: jwtClient
     }
 
-    let response = await sheets.spreadsheets.values.append(request)
+    let response = await sheets.spreadsheets.values.update(request)
+    return
+}
+
+async function clearSheet(spreadsheetId, jwtClient) {
+    const request = {
+        spreadsheetId: spreadsheetId,
+        range: 'Sheet1!A2:E',
+        auth: jwtClient
+    }
+
+    await sheets.spreadsheets.values.clear(request)
     return
 }
