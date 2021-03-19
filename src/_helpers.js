@@ -228,10 +228,11 @@ exports.writeToSheets = async (sub) => {
 
   const user = await this.getUserProfile(sub)
 
-  let userDetails = ['date', 'name', 'email', 'timestamp']
+  let userDetails = ['createDate', 'name', 'email', 'createTimestamp', 'lastmodTimestamp' ]
 
   userDetails[3] = user.UserCreateDate
   userDetails[0] = JSON.stringify(user.UserCreateDate).substr(1).split('T')[0]
+  userDetails[4] = user.UserLastModifiedDate
 
   for (const attribute of user.UserAttributes) {
     if (attribute.Name === 'name') {
@@ -258,7 +259,7 @@ exports.writeToSheets = async (sub) => {
     do {
       const enterSearchCriteria_request = {
         spreadsheetId: spreadsheetId,
-        range: 'Sheet1!E4',
+        range: 'backend!A4',
         valueInputOption: 'raw',
         resource,
         auth: jwtClient
@@ -268,7 +269,7 @@ exports.writeToSheets = async (sub) => {
 
       const getRange_request = {
         spreadsheetId: spreadsheetId,
-        range: 'Sheet1!E2',
+        range: 'backend!A2',
         auth: jwtClient
       }
       range = (await sheets.spreadsheets.values.get(getRange_request)).data.values[0][0]
