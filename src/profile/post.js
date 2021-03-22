@@ -59,6 +59,8 @@ exports.handler = async (event) => {
 
         const response = await cognitoidentityserviceprovider.signUp(params).promise()
         console.log('signUpResponse ', response)
+        await _h.writeToSheets(response.UserSub, 'prod-poff-sheet-unccontact')
+
 
         return response
       }
@@ -76,7 +78,7 @@ exports.handler = async (event) => {
     console.log(params)
     const response = await cognitoidentityserviceprovider.adminCreateUser(params).promise()
     
-    await _h.writeToSheets(event.userName)
+    await _h.writeToSheets(response.User.Username, 'prod-poff-sheet-contact')
     return response
   }
 }
