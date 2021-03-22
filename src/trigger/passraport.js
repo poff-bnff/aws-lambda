@@ -20,8 +20,8 @@ exports.handler = async (event) => {
     if (event.rawQueryString === 'usersraport') {
         return await usersraport()
     }
-    if (event.rawQueryString === 'attr') {
-        return await attr()
+    if (event.rawQueryString === 'contact' || event.rawQueryString === 'unccontact'  ) {
+        return await attr(event.rawQueryString)
     }
 
     return 'No such function'
@@ -239,13 +239,18 @@ function createCalendar() {
     return calendar
 }
 
-async function attr() {
+async function attr(sheet) {
     const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider()
     const params = {
         UserPoolId: await _h.ssmParameter('prod-poff-cognito-pool-id'),
         AttributesToGet: null,
         PaginationToken: 'firstPage'
     }
+    const statuses = []
+    if (sheet === 'contact') statuses.push('CONFIRMED', 'FORCE_CHANGE_PASSWORD')
+    if (sheet === 'unccontact') statuses.push('UNCONFIRMED')
+
+
     const datatoGS = []
 
     while (params.PaginationToken) {
@@ -254,11 +259,14 @@ async function attr() {
         // datatoGS.push([i])
         const result = await cognitoidentityserviceprovider.listUsers(params).promise()
         for (const user of result.Users) {
+            if (!statuses.includes(user.UserStatus)) continue
             if (!user.Username.includes('google') && !user.Username.includes('facebook') && !user.Username.includes('eventival')) {
-                const userAttributes = ['createDate', 'name', 'email', 'createTimestamp', 'lastmodTimestamp']
+                const userAttributes = ['createDate', 'name', 'email', 'createTimestamp', 'lastmodTimestamp', 'userStatus' ]
                 userAttributes[3] = user.UserCreateDate
                 userAttributes[0] = (JSON.stringify(userAttributes[3])).substr(1).split('T')[0]
                 userAttributes[4] = user.UserLastModifiedDate
+                userAttributes[5] = user.UserStatus
+
                 for (const attribute of user.Attributes) {
                     if (attribute.Name === 'name') {
                         userAttributes[1] = attribute.Value
@@ -279,15 +287,15 @@ async function attr() {
         if (result.PaginationToken) {
             params.PaginationToken = result.PaginationToken
         } else {
-            await writeToSheets(datatoGS)
+            await writeToSheets(datatoGS, `prod-poff-sheet-${sheet}`)
             return 'Exported to Sheets'
         }
     }
 }
 
-async function writeToSheets(data) {
+async function writeToSheets(data, sheet) {
     const key = JSON.parse(await _h.ssmParameter('prod-poff-GSA-key'))
-    const spreadsheetId = await _h.ssmParameter('prod-poff-sheet-contact')
+    const spreadsheetId = await _h.ssmParameter(sheet)
 
     const jwtClient = new google.auth.JWT(
         key.client_email,
@@ -324,7 +332,7 @@ async function writeToSheets(data) {
 async function clearSheet(spreadsheetId, jwtClient) {
     const request = {
         spreadsheetId: spreadsheetId,
-        range: 'Sheet1!A2:E',
+        range: 'Sheet1!A2:F',
         auth: jwtClient
     }
 

@@ -203,14 +203,15 @@ exports.getUserProfile = async (sub) => {
     UserPoolId: await this.ssmParameter('prod-poff-cognito-pool-id'),
     Username: sub,
   }
+
   const user = await cognitoidentityserviceprovider.adminGetUser(params).promise()
   return user
 }
 
-exports.writeToSheets = async (sub) => {
+exports.writeToSheets = async (sub, sheet) => {
 
   const key = JSON.parse(await ssmParameter('prod-poff-GSA-key'))
-  const spreadsheetId = await ssmParameter('prod-poff-sheet-contact')
+  const spreadsheetId = await ssmParameter(sheet)
 
   const jwtClient = new google.auth.JWT(
     key.client_email,
@@ -224,15 +225,14 @@ exports.writeToSheets = async (sub) => {
     null
   );
 
-  await jwtClient.authorize()
-
   const user = await this.getUserProfile(sub)
 
-  let userDetails = ['createDate', 'name', 'email', 'createTimestamp', 'lastmodTimestamp' ]
+  let userDetails = ['createDate', 'name', 'email', 'createTimestamp', 'lastmodTimestamp', 'userStatus' ]
 
   userDetails[3] = user.UserCreateDate
   userDetails[0] = JSON.stringify(user.UserCreateDate).substr(1).split('T')[0]
   userDetails[4] = user.UserLastModifiedDate
+  userDetails[5] = user.UserStatus
 
   for (const attribute of user.UserAttributes) {
     if (attribute.Name === 'name') {
@@ -246,6 +246,8 @@ exports.writeToSheets = async (sub) => {
     }
   }
 
+  if (sheet === 'prod-poff-sheet-unccontact') this.toSheetUnccontact(userDetails, spreadsheetId, jwtClient)
+
   if (user.UserAttributes.length > 2) {
 
     let resource = {
@@ -255,6 +257,8 @@ exports.writeToSheets = async (sub) => {
 
     let range
     let email
+
+    await jwtClient.authorize()
 
     do {
       const enterSearchCriteria_request = {
@@ -287,6 +291,8 @@ exports.writeToSheets = async (sub) => {
       values: [userDetails]
     };
 
+    await jwtClient.authorize()
+
     const request = {
       spreadsheetId: spreadsheetId,
       range: `Sheet1!A${row}`,
@@ -307,6 +313,8 @@ exports.writeToSheets = async (sub) => {
       values: [userDetails]
     };
 
+    await jwtClient.authorize()
+
     const request = {
       spreadsheetId: spreadsheetId,
       range: `Sheet1!A1`,
@@ -321,3 +329,22 @@ exports.writeToSheets = async (sub) => {
 }
 
 
+exports.toSheetUnccontact = async (userDetails, spreadsheetId, jwtClient) => {
+
+  const resource = {
+    values: [userDetails]
+  };
+
+  await jwtClient.authorize()
+
+  const request = {
+    spreadsheetId: spreadsheetId,
+    range: `Sheet1!A1`,
+    valueInputOption: 'raw',
+    resource,
+    auth: jwtClient
+  }
+
+  await sheets.spreadsheets.values.append(request)
+  return
+}
