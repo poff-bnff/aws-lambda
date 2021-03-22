@@ -208,7 +208,7 @@ exports.getUserProfile = async (sub) => {
   return user
 }
 
-exports.writeToSheets = async (sub, sheet) => {
+exports.writeToSheets = async (sub, sheet, trigger) => {
 
   const key = JSON.parse(await ssmParameter('prod-poff-GSA-key'))
   const spreadsheetId = await ssmParameter(sheet)
@@ -248,7 +248,7 @@ exports.writeToSheets = async (sub, sheet) => {
 
   if (sheet === 'prod-poff-sheet-unccontact') this.toSheetUnccontact(userDetails, spreadsheetId, jwtClient)
 
-  if (user.UserAttributes.length > 2) {
+  if (user.UserAttributes.length > 2 && !trigger) {
 
     let resource = {
       values: [[userDetails[2]]]

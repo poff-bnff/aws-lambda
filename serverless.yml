@@ -346,6 +346,16 @@ functions:
         layers:
             - {Ref: CommonNodeLibsLambdaLayer}
 
+    trigger-cognito-postConfirmation:
+        handler: src/trigger/cognito/postConfirmation.handler
+        name: ${self:provider.stage}-${self:service}-trigger-cognito-postConfirmation
+        description: Runs after user is confirmed. 
+        package:
+            include:
+                - src/trigger/cognito/postConfirmation.js
+        layers:
+            - {Ref: CommonNodeLibsLambdaLayer}        
+
     trigger-cognito-checkIfUserExists:
         handler: src/trigger/cognito/checkIfUserExists.handler
         name: ${self:provider.stage}-${self:service}-trigger-cognito-checkIfUserExists
